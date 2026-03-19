@@ -18,7 +18,6 @@ export default function ThemeToggle() {
   return (
     <button
       onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-      className="p-2 border border-border hover:bg-foreground hover:text-background transition-colors"
       aria-label="Toggle Theme"
     >
       {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}

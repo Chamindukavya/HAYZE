@@ -121,18 +121,18 @@ function OrdersContent() {
         {/* Search Section */}
         <div className="bg-background border border-border p-8 rounded-lg mb-12">
           <h2 className="text-lg font-display font-bold tracking-tight mb-6">Search by Order Number</h2>
-          <form onSubmit={handleSearch} className="flex gap-3">
+          <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-3">
             <input
               type="text"
               value={searchOrderNumber}
               onChange={(e) => setSearchOrderNumber(e.target.value)}
               placeholder="Enter your order number (e.g., ORD-XXXXX-XXXXX)"
-              className="flex-1 border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:border-foreground transition-colors"
+              className="w-full sm:flex-1 border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:border-foreground transition-colors"
             />
             <button
               type="submit"
               disabled={loading}
-              className="bg-foreground text-background px-8 py-3 text-xs font-bold uppercase tracking-[0.2em] hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+              className="w-full sm:w-auto bg-foreground text-background px-8 py-3 text-xs font-bold uppercase tracking-[0.2em] hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
             >
               {loading ? <Loader size={16} className="animate-spin" /> : 'Search'}
             </button>
@@ -140,7 +140,7 @@ function OrdersContent() {
               <button
                 type="button"
                 onClick={handleClearSearch}
-                className="border border-border bg-background px-6 py-3 text-xs font-bold uppercase tracking-[0.2em] hover:bg-muted transition-colors"
+                className="w-full sm:w-auto border border-border bg-background px-6 py-3 text-xs font-bold uppercase tracking-[0.2em] hover:bg-muted transition-colors"
               >
                 Clear
               </button>
