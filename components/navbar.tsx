@@ -56,14 +56,14 @@ export default function Navbar() {
 
           {/* Logo */}
           <div className="absolute left-1/2 -translate-x-1/2 shrink-0 flex items-center md:static md:translate-x-0">
-            <Link href="/" className="relative h-9 w-32 sm:h-9 sm:w-32">
+            <Link href="/" className="relative h-18 w-32 sm:h-18 sm:w-32">
               <Image
                 src={logoSrc}
                 alt="HAYZE"
                 fill
                 priority
-                sizes="(max-width: 640px) 200px, 200px"
-                className="object-contain scale-310"
+                // sizes="(max-width: 640px) 50px, 50px"
+                className="object-contain"
               />
             </Link>
           </div>
