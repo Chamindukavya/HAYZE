@@ -8,7 +8,7 @@ import Link from 'next/link';
 import { Search, ChevronDown } from 'lucide-react';
 import type { Product } from '@/types';
 
-const categories = ['All', 'Tops', 'Bottoms', 'Outerwear', 'Accessories'];
+const categories = ['All',"Men's T Shirts","Men's Over Size T Shirts", "Women's T Shirts", "Unisex T Shirts", 'Tops', "Women's Shorts"];
 const sortOptions = ['Newest', 'Price: Low to High', 'Price: High to Low', 'Most Popular'];
 
 export default function ShopPage() {

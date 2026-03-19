@@ -387,10 +387,14 @@ export default function AdminProducts() {
                     onChange={handleInputChange}
                     className="w-full bg-zinc-950 border border-white/5 px-4 py-3 text-sm focus:outline-none focus:border-white/20 transition-colors rounded-lg"
                   >
+                    <option>Men's T Shirts</option>
+                    <option>Men's Over Size T Shirts</option>
+                    <option>Women's T Shirts</option>
+                    <option>Women's Over Size T Shirts</option>
+                    <option>Unisex T Shirts</option>
+                    <option>Unisex Over Size T Shirts</option>
+                    <option>Women's Shorts</option>
                     <option>Tops</option>
-                    <option>Bottoms</option>
-                    <option>Outerwear</option>
-                    <option>Accessories</option>
                   </select>
                 </div>
               </div>

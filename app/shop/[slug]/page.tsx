@@ -120,7 +120,7 @@ export default function ProductPage() {
                   <span className="text-foreground">{product.name}</span>
                 </div>
                 <h1 className="text-5xl md:text-6xl font-display font-bold tracking-tighter mb-6 leading-none">{product.name}</h1>
-                <p className="text-3xl font-bold tracking-tighter">${product.price.toFixed(2)}</p>
+                <p className="text-3xl font-bold tracking-tighter">{product.price.toFixed(2)}</p>
               </div>
 
               <div className="space-y-12 mb-12">
