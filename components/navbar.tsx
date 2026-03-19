@@ -43,19 +43,19 @@ export default function Navbar() {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/20 backdrop-blur-md border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="relative flex justify-between items-center h-16">
           {/* Mobile Menu Button */}
-          <div className="flex md:hidden">
+          <div className="relative z-20 flex md:hidden">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="text-muted-foreground hover:text-foreground transition-colors"
+              className="relative z-20 text-muted-foreground hover:text-foreground transition-colors"
             >
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
 
           {/* Logo */}
-          <div className="shrink-0 flex items-center">
+          <div className="absolute left-1/2 -translate-x-1/2 shrink-0 flex items-center md:static md:translate-x-0">
             <Link href="/" className="relative h-9 w-32 sm:h-9 sm:w-32">
               <Image
                 src={logoSrc}
