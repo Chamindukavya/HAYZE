@@ -1,6 +1,6 @@
 import ShopCatalog from '@/components/shop-catalog';
 
-const womenCategories = ['All', "Women's T Shirts", "Women's Over Size T Shirts", "Women's Shorts", 'Unisex T Shirts'];
+const womenCategories = ['All', 'OverSized', 'Regular', 'Shorts', 'Tops'];
 
 export default function WomenPage() {
   return (

@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import Link from 'next/link';
 import { Gift, Check, ArrowRight, Loader2 } from 'lucide-react';
 import { useParams } from 'next/navigation';
+import { optimizeCloudinaryUrl } from '@/lib/utils';
 
 export default function ClaimGiftPage() {
   const params = useParams();
@@ -123,9 +124,11 @@ export default function ClaimGiftPage() {
             </div>
             <div className="relative aspect-[3/4] w-48 mx-auto border border-border">
               <Image 
-                src={selectedProduct?.images?.[0] || 'https://picsum.photos/seed/vibe-placeholder/400/500'} 
+                src={optimizeCloudinaryUrl(selectedProduct?.images?.[0] || 'https://picsum.photos/seed/vibe-placeholder/400/500')} 
                 alt={selectedProduct?.name || 'Product'}
                 fill
+                unoptimized
+                sizes="192px"
                 className="object-cover"
                 referrerPolicy="no-referrer"
               />
@@ -144,9 +147,11 @@ export default function ClaimGiftPage() {
                 >
                   <div className="relative aspect-[3/4] overflow-hidden">
                     <Image
-                      src={product.images[0]}
+                      src={optimizeCloudinaryUrl(product.images[0])}
                       alt={product.name}
                       fill
+                      unoptimized
+                      sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
                       className="object-cover group-hover:grayscale-0 transition-all duration-700"
                       referrerPolicy="no-referrer"
                     />

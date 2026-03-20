@@ -5,6 +5,7 @@ import Footer from '@/components/footer';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Trash2, Plus, Minus, ArrowRight } from 'lucide-react';
+import { optimizeCloudinaryUrl } from '@/lib/utils';
 import { useCart } from '@/hooks/use-cart';
 
 export default function CartPage() {
@@ -28,9 +29,11 @@ export default function CartPage() {
                 <div key={`${item._id}-${item.selectedSize}-${item.selectedColor}`} className="flex gap-6 pb-8 border-b border-border">
                   <div className="relative w-24 h-32 md:w-32 md:h-40 bg-background border border-border overflow-hidden">
                     <Image
-                      src={item.images?.[0] || 'https://picsum.photos/seed/vibe-cart-fallback/200/250'}
+                      src={optimizeCloudinaryUrl(item.images?.[0] || 'https://picsum.photos/seed/vibe-cart-fallback/200/250')}
                       alt={item.name}
                       fill
+                      unoptimized
+                      sizes="(max-width: 768px) 100px, 128px"
                       className="object-cover"
                       referrerPolicy="no-referrer"
                     />

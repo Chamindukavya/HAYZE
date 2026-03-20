@@ -5,7 +5,8 @@ import Navbar from '@/components/navbar';
 import Footer from '@/components/footer';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Search, ChevronDown } from 'lucide-react';
+import { Search } from 'lucide-react';
+import { optimizeCloudinaryUrl } from '@/lib/utils';
 import type { Product } from '@/types';
 
 type ShopCatalogProps = {
@@ -127,7 +128,7 @@ export default function ShopCatalog({
                 className="w-full bg-transparent border border-border pl-12 pr-4 py-3 text-[10px] uppercase tracking-widest focus:outline-none focus:bg-foreground focus:text-background transition-all"
               />
             </div>
-            <div className="relative group">
+            {/* <div className="relative group">
               <button className="flex items-center gap-3 text-[8px] uppercase tracking-[0.3em] font-bold border border-border px-6 py-3 hover:bg-foreground hover:text-background transition-all">
                 Sort: {activeSort} <ChevronDown size={10} />
               </button>
@@ -142,7 +143,7 @@ export default function ShopCatalog({
                   </button>
                 ))}
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
 
@@ -164,9 +165,11 @@ export default function ShopCatalog({
               <Link key={product._id} href={`/shop/${product._id}`} className="group">
                 <div className="relative aspect-3/4 overflow-hidden border border-border mb-6">
                   <Image
-                    src={product.images?.[0] || 'https://picsum.photos/seed/vibe-shop-fallback/800/1000'}
+                    src={optimizeCloudinaryUrl(product.images?.[0] || 'https://picsum.photos/seed/vibe-shop-fallback/800/1000')}
                     alt={product.name}
                     fill
+                    sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                    unoptimized
                     className="object-cover group-hover:scale-105 transition-transform duration-1000"
                     referrerPolicy="no-referrer"
                   />

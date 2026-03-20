@@ -1,13 +1,7 @@
 import ShopCatalog from '@/components/shop-catalog';
 
 const categories = [
-  'All',
-  "Men's T Shirts",
-  "Men's Over Size T Shirts",
-  "Women's T Shirts",
-  'Unisex T Shirts',
-  'Tops',
-  "Women's Shorts",
+  'All', 'OverSized', 'Regular', 'Shorts', 'Tops'
 ];
 
 export default function ShopPage() {

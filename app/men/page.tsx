@@ -1,6 +1,6 @@
 import ShopCatalog from '@/components/shop-catalog';
 
-const menCategories = ['All', "Men's T Shirts", "Men's Over Size T Shirts", 'Unisex T Shirts'];
+const menCategories = ['All', 'OverSized', 'Regular',];
 
 export default function MenPage() {
   return (

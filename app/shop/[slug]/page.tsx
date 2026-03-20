@@ -7,6 +7,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { ShoppingBag, Heart, ChevronRight } from 'lucide-react';
+import { optimizeCloudinaryUrl } from '@/lib/utils';
 import type { Product } from '@/types';
 import { useCart } from '@/hooks/use-cart';
 
@@ -97,9 +98,11 @@ export default function ProductPage() {
             {images.map((img, i) => (
               <div key={i} className="relative aspect-3/4 overflow-hidden bg-background border border-border">
                 <Image
-                  src={img}
+                  src={optimizeCloudinaryUrl(img)}
                   alt={`Product Image ${i + 1}`}
                   fill
+                  unoptimized
+                  sizes="(max-width: 768px) 50vw, (max-width: 1200px) 50vw, 45vw"
                   className="object-cover hover:transition-all duration-700"
                   priority={i === 0}
                   referrerPolicy="no-referrer"
@@ -209,9 +212,11 @@ export default function ProductPage() {
               <Link key={item._id} href={`/shop/${item._id}`} className="group cursor-pointer">
                 <div className="relative aspect-3/4 overflow-hidden bg-background border border-border mb-6">
                   <Image
-                    src={item.images?.[0] || 'https://picsum.photos/seed/vibe-related-fallback/600/800'}
+                    src={optimizeCloudinaryUrl(item.images?.[0] || 'https://picsum.photos/seed/vibe-related-fallback/600/800')}
                     alt={item.name}
                     fill
+                    unoptimized
+                    sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 25vw"
                     className="object-cover group-hover:scale-105 transition-transform duration-700"
                     referrerPolicy="no-referrer"
                   />

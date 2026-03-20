@@ -1,14 +1,22 @@
-'use client';
+"use client";
 
-import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from 'react';
-import { Plus, Search, Filter, Edit2, Trash2, ExternalLink } from 'lucide-react';
-import Image from 'next/image';
-import type { Product } from '@/types';
+import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react";
+import {
+  Plus,
+  Search,
+  Filter,
+  Edit2,
+  Trash2,
+  ExternalLink,
+} from "lucide-react";
+import Image from "next/image";
+import { optimizeCloudinaryUrl } from "@/lib/utils";
+import type { Product } from "@/types";
 
 type ProductFormState = {
   name: string;
   category: string;
-  gender: 'men' | 'women' | 'unisex';
+  gender: "men" | "women" | "unisex";
   price: string;
   stock: string;
   description: string;
@@ -18,28 +26,35 @@ type ProductFormState = {
 };
 
 const initialFormState: ProductFormState = {
-  name: '',
-  category: 'Tops',
-  gender: 'unisex',
-  price: '',
-  stock: '',
-  description: '',
-  colors: '',
-  sizes: '',
+  name: "",
+  category: "Tops",
+  gender: "unisex",
+  price: "",
+  stock: "",
+  description: "",
+  colors: "",
+  sizes: "",
   isFeatured: false,
 };
+
+const mensCategories = ["OverSized", "Regular"];
+const womensCategories = ["OverSized", "Regular", "Shorts", "Tops"];
+const unisexCategories = ["OverSized", "Regular", "Shorts", "Tops"];
 
 export default function AdminProducts() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [isLoadingProducts, setIsLoadingProducts] = useState(true);
   const [isSavingProduct, setIsSavingProduct] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [formState, setFormState] = useState<ProductFormState>(initialFormState);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [formState, setFormState] =
+    useState<ProductFormState>(initialFormState);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [editingProductId, setEditingProductId] = useState<string | null>(null);
-  const [deletingProductId, setDeletingProductId] = useState<string | null>(null);
+  const [deletingProductId, setDeletingProductId] = useState<string | null>(
+    null,
+  );
   const [isDeleting, setIsDeleting] = useState(false);
 
   const selectedFilePreviews = useMemo(() => {
@@ -51,7 +66,9 @@ export default function AdminProducts() {
 
   useEffect(() => {
     return () => {
-      selectedFilePreviews.forEach((preview) => URL.revokeObjectURL(preview.url));
+      selectedFilePreviews.forEach((preview) =>
+        URL.revokeObjectURL(preview.url),
+      );
     };
   }, [selectedFilePreviews]);
 
@@ -71,17 +88,17 @@ export default function AdminProducts() {
     const loadProducts = async () => {
       try {
         setIsLoadingProducts(true);
-        setErrorMessage('');
-        const response = await fetch('/api/products', { cache: 'no-store' });
+        setErrorMessage("");
+        const response = await fetch("/api/products", { cache: "no-store" });
 
         if (!response.ok) {
-          throw new Error('Failed to load products');
+          throw new Error("Failed to load products");
         }
 
         const data = (await response.json()) as Product[];
         setProducts(data);
       } catch (error) {
-        setErrorMessage('Unable to load products right now.');
+        setErrorMessage("Unable to load products right now.");
       } finally {
         setIsLoadingProducts(false);
       }
@@ -93,26 +110,26 @@ export default function AdminProducts() {
   const resetModal = () => {
     setFormState(initialFormState);
     setSelectedFiles([]);
-    setErrorMessage('');
+    setErrorMessage("");
     setIsAddModalOpen(false);
     setEditingProductId(null);
   };
 
   const handleEditClick = (product: Product) => {
     setFormState({
-      name: product.name || '',
-      category: product.category || 'Tops',
-      gender: product.gender || 'unisex',
-      price: product.price?.toString() || '0',
-      stock: product.stock?.toString() || '0',
-      description: product.description || '',
-      colors: product.colors?.join(', ') || '',
-      sizes: product.sizes?.join(', ') || '',
+      name: product.name || "",
+      category: product.category || "Tops",
+      gender: product.gender || "unisex",
+      price: product.price?.toString() || "0",
+      stock: product.stock?.toString() || "0",
+      description: product.description || "",
+      colors: product.colors?.join(", ") || "",
+      sizes: product.sizes?.join(", ") || "",
       isFeatured: product.isFeatured || false,
     });
     setEditingProductId(product._id);
     setSelectedFiles([]);
-    setErrorMessage('');
+    setErrorMessage("");
     setIsAddModalOpen(true);
   };
 
@@ -121,21 +138,25 @@ export default function AdminProducts() {
     try {
       setIsDeleting(true);
       const response = await fetch(`/api/products/${deletingProductId}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
-      if (!response.ok) throw new Error('Failed to delete product');
-      setProducts((current) => current.filter((p) => p._id !== deletingProductId));
+      if (!response.ok) throw new Error("Failed to delete product");
+      setProducts((current) =>
+        current.filter((p) => p._id !== deletingProductId),
+      );
       setDeletingProductId(null);
     } catch (error) {
       console.error(error);
-      alert('Failed to delete product. Please try again.');
+      alert("Failed to delete product. Please try again.");
     } finally {
       setIsDeleting(false);
     }
   };
 
   const handleInputChange = (
-    event: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    event: ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >,
   ) => {
     const { name, value } = event.target;
     setFormState((previous) => ({ ...previous, [name]: value }));
@@ -152,22 +173,25 @@ export default function AdminProducts() {
 
     for (const file of selectedFiles) {
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append("file", file);
 
-      const response = await fetch('/api/upload', {
-        method: 'POST',
+      const response = await fetch("/api/upload", {
+        method: "POST",
         body: formData,
       });
 
       if (!response.ok) {
-        throw new Error('Image upload failed');
+        throw new Error("Image upload failed");
       }
 
-      const data = (await response.json()) as { secure_url?: string; url?: string };
+      const data = (await response.json()) as {
+        secure_url?: string;
+        url?: string;
+      };
       const imageUrl = data.secure_url || data.url;
 
       if (!imageUrl) {
-        throw new Error('Cloudinary did not return an image URL');
+        throw new Error("Cloudinary did not return an image URL");
       }
 
       imageUrls.push(imageUrl);
@@ -179,19 +203,24 @@ export default function AdminProducts() {
   const handleCreateProduct = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (!formState.name || !formState.description || !formState.price || !formState.stock) {
-      setErrorMessage('Please complete all required fields.');
+    if (
+      !formState.name ||
+      !formState.description ||
+      !formState.price ||
+      !formState.stock
+    ) {
+      setErrorMessage("Please complete all required fields.");
       return;
     }
 
     if (!editingProductId && selectedFiles.length === 0) {
-      setErrorMessage('Please upload at least one product image.');
+      setErrorMessage("Please upload at least one product image.");
       return;
     }
 
     try {
       setIsSavingProduct(true);
-      setErrorMessage('');
+      setErrorMessage("");
 
       let images = undefined;
       if (selectedFiles.length > 0) {
@@ -206,11 +235,11 @@ export default function AdminProducts() {
         gender: formState.gender,
         stock: Number(formState.stock),
         colors: formState.colors
-          .split(',')
+          .split(",")
           .map((item) => item.trim())
           .filter(Boolean),
         sizes: formState.sizes
-          .split(',')
+          .split(",")
           .map((item) => item.trim())
           .filter(Boolean),
         isFeatured: formState.isFeatured,
@@ -220,30 +249,38 @@ export default function AdminProducts() {
         payload.images = images;
       }
 
-      const method = editingProductId ? 'PUT' : 'POST';
-      const endpoint = editingProductId ? `/api/products/${editingProductId}` : '/api/products';
+      const method = editingProductId ? "PUT" : "POST";
+      const endpoint = editingProductId
+        ? `/api/products/${editingProductId}`
+        : "/api/products";
 
       const response = await fetch(endpoint, {
         method,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
-        throw new Error(`Failed to ${editingProductId ? 'update' : 'create'} product`);
+        throw new Error(
+          `Failed to ${editingProductId ? "update" : "create"} product`,
+        );
       }
 
       const savedProduct = (await response.json()) as Product;
-      
+
       if (editingProductId) {
-        setProducts((previous) => previous.map((p) => p._id === editingProductId ? savedProduct : p));
+        setProducts((previous) =>
+          previous.map((p) => (p._id === editingProductId ? savedProduct : p)),
+        );
       } else {
         setProducts((previous) => [savedProduct, ...previous]);
       }
-      
+
       resetModal();
     } catch (error) {
-      setErrorMessage(`Could not ${editingProductId ? 'update' : 'save'} product. Please try again.`);
+      setErrorMessage(
+        `Could not ${editingProductId ? "update" : "save"} product. Please try again.`,
+      );
     } finally {
       setIsSavingProduct(false);
     }
@@ -253,10 +290,14 @@ export default function AdminProducts() {
     <div className="space-y-8">
       <div className="flex justify-between items-end">
         <div>
-          <h1 className="text-3xl font-display font-bold tracking-tighter">PRODUCTS</h1>
-          <p className="text-zinc-500 text-sm">Manage your inventory and product details.</p>
+          <h1 className="text-3xl font-display font-bold tracking-tighter">
+            PRODUCTS
+          </h1>
+          <p className="text-zinc-500 text-sm">
+            Manage your inventory and product details.
+          </p>
         </div>
-        <button 
+        <button
           onClick={() => setIsAddModalOpen(true)}
           className="bg-white text-black px-6 py-3 text-xs font-bold uppercase tracking-widest flex items-center gap-2 hover:bg-zinc-200 transition-colors"
         >
@@ -268,10 +309,13 @@ export default function AdminProducts() {
       {/* Filters */}
       <div className="flex gap-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" size={16} />
-          <input 
-            type="text" 
-            placeholder="Search products by name, SKU..." 
+          <Search
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500"
+            size={16}
+          />
+          <input
+            type="text"
+            placeholder="Search products by name, SKU..."
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
             className="w-full bg-zinc-900 border border-white/5 pl-10 pr-4 py-2 text-sm focus:outline-none focus:border-white/20 transition-colors rounded-lg"
@@ -299,58 +343,93 @@ export default function AdminProducts() {
           <tbody className="text-sm">
             {isLoadingProducts ? (
               <tr>
-                <td colSpan={6} className="px-6 py-10 text-center text-zinc-500">
+                <td
+                  colSpan={6}
+                  className="px-6 py-10 text-center text-zinc-500"
+                >
                   Loading products...
                 </td>
               </tr>
             ) : filteredProducts.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-6 py-10 text-center text-zinc-500">
+                <td
+                  colSpan={6}
+                  className="px-6 py-10 text-center text-zinc-500"
+                >
                   No products found.
                 </td>
               </tr>
             ) : (
               filteredProducts.map((product) => (
-              <tr key={product._id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
-                <td className="px-6 py-4">
-                  <div className="flex items-center gap-4">
-                    <div className="relative w-12 h-16 bg-zinc-800 rounded overflow-hidden">
-                      <Image 
-                        src={product.images?.[0] || 'https://picsum.photos/seed/vibe-product-fallback/100/150'} 
-                        alt={product.name}
-                        fill 
-                        className="object-cover"
-                        referrerPolicy="no-referrer"
+                <tr
+                  key={product._id}
+                  className="border-b border-white/5 hover:bg-white/5 transition-colors"
+                >
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-4">
+                      <div className="relative w-12 h-16 bg-zinc-800 rounded overflow-hidden">
+                        <Image
+                          src={optimizeCloudinaryUrl(
+                            product.images?.[0] ||
+                            "https://picsum.photos/seed/vibe-product-fallback/100/150"
+                          )}
+                          alt={product.name}
+                          fill
+                          unoptimized
+                          sizes="48px"
+                          className="object-cover"
+                          referrerPolicy="no-referrer"
+                        />
+                      </div>
+                      <div>
+                        <p className="font-bold">{product.name}</p>
+                        <p className="text-[10px] text-zinc-500 uppercase tracking-widest">
+                          SKU: {product._id.slice(-8).toUpperCase()}
+                        </p>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-zinc-400">
+                    {product.category}
+                  </td>
+                  <td className="px-6 py-4 font-bold">
+                    ${product.price.toFixed(2)}
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`w-2 h-2 rounded-full ${product.stock > 0 ? "bg-emerald-500" : "bg-red-500"}`}
                       />
+                      {product.stock} in stock
                     </div>
-                    <div>
-                      <p className="font-bold">{product.name}</p>
-                      <p className="text-[10px] text-zinc-500 uppercase tracking-widest">SKU: {product._id.slice(-8).toUpperCase()}</p>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-white/5 text-white">
+                      {product.stock > 0 ? "Published" : "Out of stock"}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    <div className="flex justify-end gap-2">
+                      <button
+                        onClick={() => handleEditClick(product)}
+                        className="p-2 text-zinc-400 hover:text-white transition-colors"
+                      >
+                        <Edit2 size={16} />
+                      </button>
+                      <button
+                        onClick={() => setDeletingProductId(product._id)}
+                        className="p-2 text-zinc-400 hover:text-red-500 transition-colors"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                      <button className="p-2 text-zinc-400 hover:text-white transition-colors">
+                        <ExternalLink size={16} />
+                      </button>
                     </div>
-                  </div>
-                </td>
-                <td className="px-6 py-4 text-zinc-400">{product.category}</td>
-                <td className="px-6 py-4 font-bold">${product.price.toFixed(2)}</td>
-                <td className="px-6 py-4">
-                  <div className="flex items-center gap-2">
-                    <span className={`w-2 h-2 rounded-full ${product.stock > 0 ? 'bg-emerald-500' : 'bg-red-500'}`} />
-                    {product.stock} in stock
-                  </div>
-                </td>
-                <td className="px-6 py-4">
-                  <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-white/5 text-white">
-                    {product.stock > 0 ? 'Published' : 'Out of stock'}
-                  </span>
-                </td>
-                <td className="px-6 py-4 text-right">
-                  <div className="flex justify-end gap-2">
-                    <button onClick={() => handleEditClick(product)} className="p-2 text-zinc-400 hover:text-white transition-colors"><Edit2 size={16} /></button>
-                    <button onClick={() => setDeletingProductId(product._id)} className="p-2 text-zinc-400 hover:text-red-500 transition-colors"><Trash2 size={16} /></button>
-                    <button className="p-2 text-zinc-400 hover:text-white transition-colors"><ExternalLink size={16} /></button>
-                  </div>
-                </td>
-              </tr>
-            )))}
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
@@ -365,179 +444,232 @@ export default function AdminProducts() {
           <div className="bg-zinc-900 border border-white/10 w-full max-w-2xl rounded-2xl overflow-hidden">
             <div className="p-8 border-b border-white/5 flex justify-between items-center">
               <h2 className="text-2xl font-display font-bold tracking-tighter">
-                {editingProductId ? 'EDIT PRODUCT' : 'ADD NEW PRODUCT'}
+                {editingProductId ? "EDIT PRODUCT" : "ADD NEW PRODUCT"}
               </h2>
-              <button type="button" onClick={resetModal} className="text-zinc-500 hover:text-white transition-colors">Close</button>
+              <button
+                type="button"
+                onClick={resetModal}
+                className="text-zinc-500 hover:text-white transition-colors"
+              >
+                Close
+              </button>
             </div>
             <form onSubmit={handleCreateProduct}>
               <div className="p-8 space-y-6 max-h-[70vh] overflow-y-auto">
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-[10px] uppercase tracking-widest font-bold">Product Name</label>
-                  <input
-                    name="name"
-                    type="text"
-                    value={formState.name}
-                    onChange={handleInputChange}
-                    className="w-full bg-zinc-950 border border-white/5 px-4 py-3 text-sm focus:outline-none focus:border-white/20 transition-colors rounded-lg"
-                    required
-                  />
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-[10px] uppercase tracking-widest font-bold">
+                      Product Name
+                    </label>
+                    <input
+                      name="name"
+                      type="text"
+                      value={formState.name}
+                      onChange={handleInputChange}
+                      className="w-full bg-zinc-950 border border-white/5 px-4 py-3 text-sm focus:outline-none focus:border-white/20 transition-colors rounded-lg"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] uppercase tracking-widest font-bold">
+                      Gender
+                    </label>
+                    <select
+                      name="gender"
+                      value={formState.gender}
+                      onChange={handleInputChange}
+                      className="w-full bg-zinc-950 border border-white/5 px-4 py-3 text-sm focus:outline-none focus:border-white/20 transition-colors rounded-lg"
+                    >
+                      <option value="men">Men</option>
+                      <option value="women">Women</option>
+                      <option value="unisex">Unisex</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-[10px] uppercase tracking-widest font-bold">
+                      Price ($)
+                    </label>
+                    <input
+                      name="price"
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={formState.price}
+                      onChange={handleInputChange}
+                      className="w-full bg-zinc-950 border border-white/5 px-4 py-3 text-sm focus:outline-none focus:border-white/20 transition-colors rounded-lg"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] uppercase tracking-widest font-bold">
+                      Stock Quantity
+                    </label>
+                    <input
+                      name="stock"
+                      type="number"
+                      min="0"
+                      value={formState.stock}
+                      onChange={handleInputChange}
+                      className="w-full bg-zinc-950 border border-white/5 px-4 py-3 text-sm focus:outline-none focus:border-white/20 transition-colors rounded-lg"
+                      required
+                    />
+                  </div>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] uppercase tracking-widest font-bold">Category</label>
+                  <label className="text-[10px] uppercase tracking-widest font-bold">
+                    Category
+                  </label>
                   <select
                     name="category"
                     value={formState.category}
                     onChange={handleInputChange}
                     className="w-full bg-zinc-950 border border-white/5 px-4 py-3 text-sm focus:outline-none focus:border-white/20 transition-colors rounded-lg"
                   >
-                    <option>Men's T Shirts</option>
-                    <option>Men's Over Size T Shirts</option>
-                    <option>Women's T Shirts</option>
-                    <option>Women's Over Size T Shirts</option>
-                    <option>Unisex T Shirts</option>
-                    <option>Unisex Over Size T Shirts</option>
-                    <option>Women's Shorts</option>
-                    <option>Tops</option>
+                    {/* dynamically render options based on selected gender */}
+                    {formState.gender === "men" &&
+                      mensCategories.map((cat) => (
+                        <option key={cat} value={cat}>
+                          {cat}
+                        </option>
+                      ))}
+                    {formState.gender === "women" &&
+                      womensCategories.map((cat) => (
+                        <option key={cat} value={cat}>
+                          {cat}
+                        </option>
+                      ))}
+                    {formState.gender === "unisex" &&
+                      unisexCategories.map((cat) => (
+                        <option key={cat} value={cat}>
+                          {cat}
+                        </option>
+                      ))}
                   </select>
                 </div>
-              </div>
-              <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-[10px] uppercase tracking-widest font-bold">Price ($)</label>
-                  <input
-                    name="price"
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    value={formState.price}
+                  <label className="text-[10px] uppercase tracking-widest font-bold">
+                    Description
+                  </label>
+                  <textarea
+                    name="description"
+                    rows={4}
+                    value={formState.description}
                     onChange={handleInputChange}
-                    className="w-full bg-zinc-950 border border-white/5 px-4 py-3 text-sm focus:outline-none focus:border-white/20 transition-colors rounded-lg"
+                    className="w-full bg-zinc-950 border border-white/5 px-4 py-3 text-sm focus:outline-none focus:border-white/20 transition-colors rounded-lg resize-none"
                     required
                   />
                 </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] uppercase tracking-widest font-bold">Stock Quantity</label>
-                  <input
-                    name="stock"
-                    type="number"
-                    min="0"
-                    value={formState.stock}
-                    onChange={handleInputChange}
-                    className="w-full bg-zinc-950 border border-white/5 px-4 py-3 text-sm focus:outline-none focus:border-white/20 transition-colors rounded-lg"
-                    required
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <label className="text-[10px] uppercase tracking-widest font-bold">Gender</label>
-                <select
-                  name="gender"
-                  value={formState.gender}
-                  onChange={handleInputChange}
-                  className="w-full bg-zinc-950 border border-white/5 px-4 py-3 text-sm focus:outline-none focus:border-white/20 transition-colors rounded-lg"
-                >
-                  <option value="men">Men</option>
-                  <option value="women">Women</option>
-                  <option value="unisex">Unisex</option>
-                </select>
-              </div>
-              <div className="space-y-2">
-                <label className="text-[10px] uppercase tracking-widest font-bold">Description</label>
-                <textarea
-                  name="description"
-                  rows={4}
-                  value={formState.description}
-                  onChange={handleInputChange}
-                  className="w-full bg-zinc-950 border border-white/5 px-4 py-3 text-sm focus:outline-none focus:border-white/20 transition-colors rounded-lg resize-none"
-                  required
-                />
-              </div>
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-[10px] uppercase tracking-widest font-bold">Colors (comma separated)</label>
-                  <input
-                    name="colors"
-                    type="text"
-                    value={formState.colors}
-                    onChange={handleInputChange}
-                    placeholder="Black, White, Navy"
-                    className="w-full bg-zinc-950 border border-white/5 px-4 py-3 text-sm focus:outline-none focus:border-white/20 transition-colors rounded-lg"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] uppercase tracking-widest font-bold">Sizes (comma separated)</label>
-                  <input
-                    name="sizes"
-                    type="text"
-                    value={formState.sizes}
-                    onChange={handleInputChange}
-                    placeholder="S, M, L, XL"
-                    className="w-full bg-zinc-950 border border-white/5 px-4 py-3 text-sm focus:outline-none focus:border-white/20 transition-colors rounded-lg"
-                  />
-                </div>
-              </div>
-              <label className="flex items-center gap-3 text-sm text-zinc-300">
-                <input
-                  type="checkbox"
-                  checked={formState.isFeatured}
-                  onChange={(event) =>
-                    setFormState((previous) => ({ ...previous, isFeatured: event.target.checked }))
-                  }
-                  className="h-4 w-4 rounded border-white/20 bg-zinc-950"
-                />
-                Mark as featured product
-              </label>
-              <div className="space-y-2">
-                <label className="text-[10px] uppercase tracking-widest font-bold">Product Images</label>
-                <div className="border-2 border-dashed border-white/5 rounded-xl p-8 text-center hover:border-white/10 transition-colors cursor-pointer">
-                  <Plus className="mx-auto mb-2 text-zinc-500" size={24} />
-                  <input
-                    type="file"
-                    multiple
-                    accept="image/*"
-                    onChange={handleFileChange}
-                    className="block mx-auto text-xs text-zinc-400 file:mr-3 file:px-4 file:py-2 file:text-xs file:font-bold file:uppercase file:tracking-widest file:bg-white file:text-black file:border-0 file:cursor-pointer"
-                  />
-                  <p className="text-xs text-zinc-500 mt-3">
-                    {selectedFiles.length > 0
-                      ? `${selectedFiles.length} file(s) selected`
-                      : 'Select one or more images'}
-                  </p>
-                </div>
-                {selectedFilePreviews.length > 0 && (
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-2">
-                    {selectedFilePreviews.map((preview) => (
-                      <div key={preview.url} className="bg-zinc-950 border border-white/10 rounded-lg overflow-hidden">
-                        <div className="aspect-square relative">
-                          <Image
-                            src={preview.url}
-                            alt={preview.name}
-                            fill
-                            unoptimized
-                            className="object-cover"
-                          />
-                        </div>
-                        <p className="text-[10px] text-zinc-400 px-2 py-2 truncate">{preview.name}</p>
-                      </div>
-                    ))}
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-[10px] uppercase tracking-widest font-bold">
+                      Colors (comma separated)
+                    </label>
+                    <input
+                      name="colors"
+                      type="text"
+                      value={formState.colors}
+                      onChange={handleInputChange}
+                      placeholder="Black, White, Navy"
+                      className="w-full bg-zinc-950 border border-white/5 px-4 py-3 text-sm focus:outline-none focus:border-white/20 transition-colors rounded-lg"
+                    />
                   </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] uppercase tracking-widest font-bold">
+                      Sizes (comma separated)
+                    </label>
+                    <input
+                      name="sizes"
+                      type="text"
+                      value={formState.sizes}
+                      onChange={handleInputChange}
+                      placeholder="S, M, L, XL"
+                      className="w-full bg-zinc-950 border border-white/5 px-4 py-3 text-sm focus:outline-none focus:border-white/20 transition-colors rounded-lg"
+                    />
+                  </div>
+                </div>
+                <label className="flex items-center gap-3 text-sm text-zinc-300">
+                  <input
+                    type="checkbox"
+                    checked={formState.isFeatured}
+                    onChange={(event) =>
+                      setFormState((previous) => ({
+                        ...previous,
+                        isFeatured: event.target.checked,
+                      }))
+                    }
+                    className="h-4 w-4 rounded border-white/20 bg-zinc-950"
+                  />
+                  Mark as featured product
+                </label>
+                <div className="space-y-2">
+                  <label className="text-[10px] uppercase tracking-widest font-bold">
+                    Product Images
+                  </label>
+                  <div className="border-2 border-dashed border-white/5 rounded-xl p-8 text-center hover:border-white/10 transition-colors cursor-pointer">
+                    <Plus className="mx-auto mb-2 text-zinc-500" size={24} />
+                    <input
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      className="block mx-auto text-xs text-zinc-400 file:mr-3 file:px-4 file:py-2 file:text-xs file:font-bold file:uppercase file:tracking-widest file:bg-white file:text-black file:border-0 file:cursor-pointer"
+                    />
+                    <p className="text-xs text-zinc-500 mt-3">
+                      {selectedFiles.length > 0
+                        ? `${selectedFiles.length} file(s) selected`
+                        : "Select one or more images"}
+                    </p>
+                  </div>
+                  {selectedFilePreviews.length > 0 && (
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-2">
+                      {selectedFilePreviews.map((preview) => (
+                        <div
+                          key={preview.url}
+                          className="bg-zinc-950 border border-white/10 rounded-lg overflow-hidden"
+                        >
+                          <div className="aspect-square relative">
+                            <Image
+                              src={preview.url}
+                              alt={preview.name}
+                              fill
+                              unoptimized
+                              className="object-cover"
+                            />
+                          </div>
+                          <p className="text-[10px] text-zinc-400 px-2 py-2 truncate">
+                            {preview.name}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                {errorMessage && (
+                  <p className="text-sm text-red-400">{errorMessage}</p>
                 )}
               </div>
-              {errorMessage && (
-                <p className="text-sm text-red-400">{errorMessage}</p>
-              )}
-            </div>
-            <div className="p-8 border-t border-white/5 flex justify-end gap-4">
-              <button type="button" onClick={resetModal} className="px-6 py-3 text-xs font-bold uppercase tracking-widest text-zinc-400 hover:text-white transition-colors">Cancel</button>
-              <button
-                type="submit"
-                disabled={isSavingProduct}
-                className="bg-white text-black px-8 py-3 text-xs font-bold uppercase tracking-widest hover:bg-zinc-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isSavingProduct ? 'Saving...' : (editingProductId ? 'Update Product' : 'Save Product')}
-              </button>
-            </div>
+              <div className="p-8 border-t border-white/5 flex justify-end gap-4">
+                <button
+                  type="button"
+                  onClick={resetModal}
+                  className="px-6 py-3 text-xs font-bold uppercase tracking-widest text-zinc-400 hover:text-white transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSavingProduct}
+                  className="bg-white text-black px-8 py-3 text-xs font-bold uppercase tracking-widest hover:bg-zinc-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isSavingProduct
+                    ? "Saving..."
+                    : editingProductId
+                      ? "Update Product"
+                      : "Save Product"}
+                </button>
+              </div>
             </form>
           </div>
         </div>
@@ -548,23 +680,26 @@ export default function AdminProducts() {
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
           <div className="bg-zinc-900 border border-white/10 w-full max-w-sm rounded-xl overflow-hidden p-6 text-center shadow-2xl">
             <Trash2 size={48} className="mx-auto mb-6 text-red-500/80" />
-            <h3 className="text-xl font-display font-bold mb-2">Delete Product?</h3>
+            <h3 className="text-xl font-display font-bold mb-2">
+              Delete Product?
+            </h3>
             <p className="text-zinc-400 text-sm mb-8 leading-relaxed">
-              Are you sure you want to delete this product? This action cannot be undone.
+              Are you sure you want to delete this product? This action cannot
+              be undone.
             </p>
             <div className="flex justify-center gap-4">
-              <button 
+              <button
                 onClick={() => setDeletingProductId(null)}
                 className="px-6 py-3 text-xs font-bold uppercase tracking-widest text-zinc-400 hover:text-white transition-colors border border-white/10 hover:bg-white/5 rounded-lg"
               >
                 Cancel
               </button>
-              <button 
+              <button
                 onClick={confirmDeleteProduct}
                 disabled={isDeleting}
                 className="px-6 py-3 text-xs font-bold uppercase tracking-widest border border-red-500/50 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white rounded-lg transition-colors disabled:opacity-50"
               >
-                {isDeleting ? 'Deleting...' : 'Delete Product'}
+                {isDeleting ? "Deleting..." : "Delete Product"}
               </button>
             </div>
           </div>
