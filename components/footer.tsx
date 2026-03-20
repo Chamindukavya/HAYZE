@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Instagram, Twitter, Facebook, Mail } from 'lucide-react';
+import { Instagram, Facebook, Mail } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -88,6 +88,9 @@ export default function Footer() {
           <p className="text-[9px] uppercase tracking-[0.3em] text-muted-foreground font-bold">
             © {new Date().getFullYear()} HAYZE CLOTHING. ALL RIGHTS RESERVED.
           </p>
+          <p className="text-[9px] uppercase tracking-[0.3em] text-muted-foreground font-bold">
+            Designed & Developed by H4X Technologies (PVT) LTD.
+          </p>
           <div className="flex gap-8 text-[9px] uppercase tracking-[0.3em] text-muted-foreground font-bold">
             <Link href="#" className="hover:text-foreground transition-colors">Privacy Policy</Link>
             <Link href="#" className="hover:text-foreground transition-colors relative before:content-[''] before:w-1 before:h-1 before:bg-border before:rounded-full before:absolute before:-left-4 before:top-1/2 before:-translate-y-1/2">
@@ -98,7 +101,7 @@ export default function Footer() {
       </div>
 
       {/* Massive Background Text Overlay */}
-      <div className="absolute left-0 right-0 bottom-[-5%] md:bottom-[-12%] z-0 pointer-events-none select-none flex justify-center opacity-[0.02] dark:opacity-[0.03] overflow-hidden">
+      <div className="absolute left-0 right-0 bottom-[-15%] md:bottom-[16%] z-0 pointer-events-none select-none flex justify-center opacity-[0.02] dark:opacity-[0.04] overflow-hidden">
         <span className="text-[28vw] font-display font-bold tracking-tighter whitespace-nowrap leading-none">
           HAYZE
         </span>

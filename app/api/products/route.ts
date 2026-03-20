@@ -7,11 +7,15 @@ export async function GET(req: Request) {
     await dbConnect();
     const { searchParams } = new URL(req.url);
     const category = searchParams.get('category');
+    const gender = searchParams.get('gender');
     const sort = searchParams.get('sort');
     const featured = searchParams.get('featured');
 
     let query: any = {};
     if (category && category !== 'All') query.category = category;
+    if (gender === 'men') query.gender = { $in: ['men', 'unisex'] };
+    if (gender === 'women') query.gender = { $in: ['women', 'unisex'] };
+    if (gender === 'unisex') query.gender = 'unisex';
     if (featured === 'true') query.isFeatured = true;
 
     let sortQuery: any = { createdAt: -1 };

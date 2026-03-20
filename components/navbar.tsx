@@ -17,7 +17,8 @@ import { signOut, useSession } from 'next-auth/react';
 
 const navLinks = [
   { name: 'Home', href: '/' },
-  { name: 'Shop', href: '/shop' },
+  { name: 'Men', href: '/men' },
+  { name: 'Women', href: '/women' },
   // { name: 'Gifts', href: '/gifts' },
   // { name: 'New Arrivals', href: '/shop?sort=newest' },
   // { name: 'Collections', href: '/shop?category=collections' },

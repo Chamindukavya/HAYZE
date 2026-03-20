@@ -4,6 +4,7 @@ export interface Product {
   description: string;
   price: number;
   category: string;
+  gender: 'men' | 'women' | 'unisex';
   images: string[];
   videos?: string[];
   colors: string[];

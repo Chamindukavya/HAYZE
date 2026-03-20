@@ -8,6 +8,7 @@ import type { Product } from '@/types';
 type ProductFormState = {
   name: string;
   category: string;
+  gender: 'men' | 'women' | 'unisex';
   price: string;
   stock: string;
   description: string;
@@ -19,6 +20,7 @@ type ProductFormState = {
 const initialFormState: ProductFormState = {
   name: '',
   category: 'Tops',
+  gender: 'unisex',
   price: '',
   stock: '',
   description: '',
@@ -100,6 +102,7 @@ export default function AdminProducts() {
     setFormState({
       name: product.name || '',
       category: product.category || 'Tops',
+      gender: product.gender || 'unisex',
       price: product.price?.toString() || '0',
       stock: product.stock?.toString() || '0',
       description: product.description || '',
@@ -200,6 +203,7 @@ export default function AdminProducts() {
         description: formState.description.trim(),
         price: Number(formState.price),
         category: formState.category,
+        gender: formState.gender,
         stock: Number(formState.stock),
         colors: formState.colors
           .split(',')
@@ -424,6 +428,19 @@ export default function AdminProducts() {
                     required
                   />
                 </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] uppercase tracking-widest font-bold">Gender</label>
+                <select
+                  name="gender"
+                  value={formState.gender}
+                  onChange={handleInputChange}
+                  className="w-full bg-zinc-950 border border-white/5 px-4 py-3 text-sm focus:outline-none focus:border-white/20 transition-colors rounded-lg"
+                >
+                  <option value="men">Men</option>
+                  <option value="women">Women</option>
+                  <option value="unisex">Unisex</option>
+                </select>
               </div>
               <div className="space-y-2">
                 <label className="text-[10px] uppercase tracking-widest font-bold">Description</label>
