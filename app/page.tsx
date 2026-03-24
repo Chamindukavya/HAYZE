@@ -15,41 +15,6 @@ const featuredCategories: { name: string; image: string; href: string }[] = [
   { name: 'Tops', image: '/images/home/categories/cat2.png', href: '/shop?category=Tops' },
 ];
 
-
-function useScrollReveal() {
-  const observerRef = useRef<IntersectionObserver | null>(null);
-
-  useEffect(() => {
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('revealed');
-            observerRef.current?.unobserve(entry.target);
-          }
-        });
-      },
-      {
-        threshold: 0.15,
-        rootMargin: '0px 0px -50px 0px',
-      }
-    );
-
-    const elements = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale');
-    elements.forEach((el) => observerRef.current?.observe(el));
-
-    return () => observerRef.current?.disconnect();
-  }, []);
-}
-
-// Smooth scroll to section
-function scrollToSection(id: string) {
-  const el = document.getElementById(id);
-  if (el) {
-    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-}
-
 export default function Home() {
   const [latestArrivals, setLatestArrivals] = useState<Product[]>([]);
   const [isLoadingArrivals, setIsLoadingArrivals] = useState(true);
@@ -113,7 +78,7 @@ export default function Home() {
       {/* ===== HERO SECTION ===== */}
       <section className="relative w-full">
         <HeroSection
-          className=" md:pt-32"
+          className="pt-12 md:pt-32"
           title={
             <>
               Explore the <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-500">HAYZE</span> Style
