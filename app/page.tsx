@@ -78,7 +78,7 @@ export default function Home() {
       {/* ===== HERO SECTION ===== */}
       <section className="relative w-full">
         <HeroSection
-          className="pt-12 md:pt-32"
+          className="pt-20 md:pt-32"
           title={
             <>
               Explore the <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-500">HAYZE</span> Style
@@ -122,7 +122,7 @@ export default function Home() {
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           {featuredCategories.map((cat, index) => (
             <Link
               key={cat.name}
