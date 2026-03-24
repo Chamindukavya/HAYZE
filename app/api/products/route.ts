@@ -32,7 +32,6 @@ export async function GET(req: NextRequest) {
     if (sort === 'price-high') sortQuery = { price: -1 };
     if (sort === 'popular') sortQuery = { clicks: -1 };
 
-    console.log('Query:', query);
     const products = await Product.find(query).sort(sortQuery);
     return NextResponse.json(products);
   } catch (error) {

@@ -7,6 +7,7 @@ import LoadingScreen from '@/components/loading-screen';
 import Link from 'next/link';
 import Image from 'next/image';
 import type { Product } from '@/types';
+import { HeroSection } from '@/components/ui/feature-carousel';
 
 const featuredCategories: { name: string; image: string; href: string }[] = [
   { name: 'T-Shirts', image: '/images/home/categories/cat1.png', href: '/shop?category=T-Shirts' },
@@ -14,9 +15,7 @@ const featuredCategories: { name: string; image: string; href: string }[] = [
   { name: 'Tops', image: '/images/home/categories/cat2.png', href: '/shop?category=Tops' },
 ];
 
-const HERO_TITLE = 'H A Y Z E';
 
-// Hook for Intersection Observer based scroll reveal
 function useScrollReveal() {
   const observerRef = useRef<IntersectionObserver | null>(null);
 
@@ -55,15 +54,7 @@ export default function Home() {
   const [latestArrivals, setLatestArrivals] = useState<Product[]>([]);
   const [isLoadingArrivals, setIsLoadingArrivals] = useState(true);
   const [arrivalsError, setArrivalsError] = useState('');
-  const [heroVisible, setHeroVisible] = useState(false);
 
-  useScrollReveal();
-
-  useEffect(() => {
-    // Trigger hero animations after a short delay for a smooth entrance
-    const timer = setTimeout(() => setHeroVisible(true), 200);
-    return () => clearTimeout(timer);
-  }, []);
 
   useEffect(() => {
     const loadLatestArrivals = async () => {
@@ -120,93 +111,43 @@ export default function Home() {
       <Navbar />
 
       {/* ===== HERO SECTION ===== */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          className="absolute inset-0 h-full w-full object-cover"
-        >
-          <source src="/images/home/hero/HeroVid.mp4" type="video/mp4" />
-        </video>
+      <section className="relative w-full">
+        <HeroSection
+          className=" md:pt-32"
+          title={
+            <>
+              Explore the <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-500">HAYZE</span> Style
+            </>
+          }
+          images={[
+            {
+              src: 'https://images.unsplash.com/photo-1504051771394-dd2e66b2e08f?w=900&auto=format&fit=crop&q=60',
+              alt: 'Professional portrait',
+            },
+            {
+              src: 'https://images.unsplash.com/photo-1526510747491-58f928ec870f?w=900&auto=format&fit=crop&q=60',
+              alt: 'Scenic landscape',
+            },
+            {
+              src: 'https://plus.unsplash.com/premium_photo-1670282392820-e3590c1c5c54?w=900&auto=format&fit=crop&q=60',
+              alt: 'Artistic photo',
+            },
+            {
+              src: 'https://images.unsplash.com/photo-1581403341630-a6e0b9d2d257?w=900&auto=format&fit=crop&q=60',
+              alt: 'A dog wearing sunglasses',
+            },
+            {
+              src: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=900&auto=format&fit=crop&q=60',
+              alt: 'Creative shot of a person from behind',
+            },
+          ]}
+          subtitle="A curated collection of minimalist streetwear designed for the modern generation."
 
-        {/* Overlays */}
-        <div className="absolute inset-0 bg-black/50" />
-        <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-b from-transparent to-white dark:hidden" />
-        <div className="absolute inset-x-0 bottom-0 hidden h-48 bg-gradient-to-b from-transparent to-black dark:block" />
-
-        {/* Hero Content — Centered */}
-        <div className="relative z-10 flex flex-col items-center justify-center text-center px-4 sm:px-6 lg:px-8">
-          {/* Decorative top line */}
-          <div
-            className={`hero-line w-16 h-px bg-white/60 mb-8 ${heroVisible ? '' : 'opacity-0'}`}
-          />
-
-          {/* Title with letter animation */}
-          <h1 className="hero-title mb-4">
-            <span className="block text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-display font-bold tracking-[0.2em] text-shimmer leading-none">
-              <div>
-              {HERO_TITLE.split('').map((char, i) => (
-                <span
-                  key={i}
-                  className="hero-letter"
-                  style={{ animationDelay: `${0.4 + i * 0.06}s` }}
-                >
-                  {char === ' ' ? '\u00A0' : char}
-                </span>
-              ))}
-            </div>
-              <div className='text-2xl'>
-                CLOTHING
-              </div>
-            </span>
-          </h1>
-
-          {/* Decorative middle line */}
-          <div
-            className={`hero-line w-24 h-px bg-white/40 mb-6 ${heroVisible ? '' : 'opacity-0'}`}
-          />
-
-          {/* Subtitle */}
-          <p className="hero-subtitle text-base sm:text-lg md:text-xl text-white/80 max-w-lg font-light tracking-[0.15em] uppercase leading-relaxed mb-10">
-            A curated collection of minimalist streetwear designed for the modern generation.
-          </p>
-
-          {/* CTA Button */}
-          <Link
-            href="/shop"
-            className="hero-cta magnetic-btn inline-block bg-white text-black px-12 py-4 text-xs sm:text-sm font-bold uppercase tracking-[0.25em] border border-white/20 hover:bg-transparent hover:text-white transition-all duration-500 mb-12"
-          >
-            Shop Collection
-          </Link>
-
-          {/* Scroll Indicator */}
-          <button
-            onClick={() => scrollToSection('categories')}
-            className="scroll-indicator flex flex-col items-center gap-2 text-white/50 hover:text-white transition-colors cursor-pointer"
-            aria-label="Scroll down"
-          >
-            <span className="text-[10px] uppercase tracking-[0.3em]">Scroll</span>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M12 5v14M5 12l7 7 7-7" />
-            </svg>
-          </button>
-        </div>
+        />
       </section>
 
       {/* ===== FEATURED CATEGORIES ===== */}
-      <section id="categories" className="py-24 px-4 max-w-7xl mx-auto">
+      <section id="categories" className="pb-24 px-8 max-w-7xl mx-auto">
         <div className="text-center mb-16 reveal">
           <span className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-3 block">
             Explore
@@ -221,23 +162,38 @@ export default function Home() {
             <Link
               key={cat.name}
               href={cat.href}
-              className={`category-card reveal group relative aspect-3/4 overflow-hidden bg-background border border-border stagger-${index + 1}`}
+              className={`category-card reveal group relative aspect-3/4 stagger-${index + 1} p-[4px] overflow-hidden bg-background`}
             >
-              <Image
-                src={cat.image}
-                alt={cat.name}
-                fill
-                className="object-cover group-hover:scale-110 group-hover:grayscale-0 transition-all duration-700"
-                referrerPolicy="no-referrer"
+              {/* Outer blurred shadow for neon glow */}
+              <div 
+                className="absolute top-1/2 left-1/2 w-[300%] h-[300%] -translate-x-1/2 -translate-y-1/2 animate-spin bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,transparent_65%,#a855f7_95%,#ffffff_100%)] opacity-60 blur-[12px] group-hover:opacity-90 transition-opacity duration-500"
+                style={{ animationDuration: '4s' }}
               />
-              <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors duration-500" />
-              <div className="absolute bottom-8 left-8">
-                <h3 className="text-2xl font-display font-bold text-white tracking-tighter">
-                  {cat.name}
-                </h3>
-                <span className="text-[10px] uppercase tracking-[0.2em] text-white/70 group-hover:text-white group-hover:tracking-[0.3em] transition-all duration-500">
-                  Explore →
-                </span>
+
+              {/* Core bright neolight tail structure */}
+              <div 
+                className="absolute top-1/2 left-1/2 w-[300%] h-[300%] -translate-x-1/2 -translate-y-1/2 animate-spin bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,transparent_80%,#a855f7_98%,#ffffff_100%)] opacity-100 blur-[2px] transition-opacity duration-500"
+                style={{ animationDuration: '4s' }}
+              />
+              
+              {/* Inner card content */}
+              <div className="relative w-full h-full overflow-hidden bg-background">
+                <Image
+                  src={cat.image}
+                  alt={cat.name}
+                  fill
+                  className="object-cover group-hover:scale-110 group-hover:grayscale-0 transition-all duration-700"
+                  referrerPolicy="no-referrer"
+                />
+                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors duration-500" />
+                <div className="absolute bottom-8 left-8 z-10">
+                  <h3 className="text-2xl font-display font-bold text-white tracking-tighter">
+                    {cat.name}
+                  </h3>
+                  <span className="text-[10px] uppercase tracking-[0.2em] text-white/70 group-hover:text-white group-hover:tracking-[0.3em] transition-all duration-500">
+                    Explore →
+                  </span>
+                </div>
               </div>
             </Link>
           ))}
