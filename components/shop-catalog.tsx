@@ -1,35 +1,88 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Navbar from '@/components/navbar';
 import Footer from '@/components/footer';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { Search } from 'lucide-react';
 import { optimizeCloudinaryUrl } from '@/lib/utils';
 import type { Product } from '@/types';
-
+import { mensCategories,unisexCategories, womensCategories } from '@/utils/catogories';
 type ShopCatalogProps = {
   pageTitle: string;
   pageSubtitle: string;
-  categories: string[];
   gender?: 'men' | 'women';
 };
+import { useRouter, usePathname } from "next/navigation";
+type GenderFilter = 'all' | 'men' | 'women';
 
 const sortOptions = ['Newest', 'Price: Low to High', 'Price: High to Low', 'Most Popular'];
 
 export default function ShopCatalog({
   pageTitle,
   pageSubtitle,
-  categories,
   gender,
 }: ShopCatalogProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const searchParamsKey = searchParams.toString();
+  const initializedFromQuery = useRef(false);
   const [products, setProducts] = useState<Product[]>([]);
   const [activeCategory, setActiveCategory] = useState('All');
   const [activeSort, setActiveSort] = useState('Newest');
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  const [activeGender, setActiveGender] = useState<GenderFilter>(gender ?? 'all');
+  const [initialQueryCategory, setInitialQueryCategory] = useState<string | null>(null);
+  const [hasInteractedWithFilters, setHasInteractedWithFilters] = useState(false);
+
+  const activeCategories = useMemo(() => {
+    if (activeGender === 'men') {
+      return mensCategories;
+    }
+    if (activeGender === 'women') {
+      return womensCategories;
+    }
+    return unisexCategories;
+  }, [activeGender]);
+
+  useEffect(() => {
+    if (initializedFromQuery.current) {
+      return;
+    }
+
+    const categoryFromUrl = searchParams.get('category');
+    const sortFromUrl = searchParams.get('sort');
+
+    if (categoryFromUrl) {
+      setInitialQueryCategory(categoryFromUrl);
+
+      if (activeCategories.includes(categoryFromUrl)) {
+        setActiveCategory(categoryFromUrl);
+      }
+    }
+
+    if (sortFromUrl === 'price-low') {
+      setActiveSort('Price: Low to High');
+    } else if (sortFromUrl === 'price-high') {
+      setActiveSort('Price: High to Low');
+    } else if (sortFromUrl === 'popular') {
+      setActiveSort('Most Popular');
+    } else {
+      setActiveSort('Newest');
+    }
+    initializedFromQuery.current = true;
+  }, [searchParamsKey, activeCategories]);
+
+  useEffect(() => {
+    if (!activeCategories.includes(activeCategory)) {
+      setActiveCategory('All');
+    }
+  }, [activeCategories, activeCategory]);
 
   useEffect(() => {
     const loadProducts = async () => {
@@ -38,8 +91,23 @@ export default function ShopCatalog({
         setError('');
 
         const params = new URLSearchParams();
-        if (gender) {
-          params.set('gender', gender);
+
+        if (activeCategory !== 'All') {
+          params.set('category', activeCategory);
+        } else if (!hasInteractedWithFilters && initialQueryCategory) {
+          params.set('category', initialQueryCategory);
+        }
+
+        if (activeSort === 'Price: Low to High') {
+          params.set('sort', 'price-low');
+        } else if (activeSort === 'Price: High to Low') {
+          params.set('sort', 'price-high');
+        } else if (activeSort === 'Most Popular') {
+          params.set('sort', 'popular');
+        }
+
+        if (activeGender !== 'all') {
+          params.set('gender', activeGender);
         }
 
         const query = params.toString();
@@ -60,9 +128,21 @@ export default function ShopCatalog({
     };
 
     loadProducts();
-  }, [gender]);
+  }, [activeCategory, activeGender, activeSort, hasInteractedWithFilters, initialQueryCategory]);
+
+  const handleFilterInteraction = () => {
+    if (searchParamsKey) {
+      router.replace(pathname, { scroll: false });
+    }
+
+    if (!hasInteractedWithFilters) {
+      setHasInteractedWithFilters(true);
+      setInitialQueryCategory(null);
+    }
+  };
 
   const displayedProducts = useMemo(() => {
+ 
     const filtered = products.filter((product) => {
       const matchesCategory = activeCategory === 'All' || product.category === activeCategory;
       const searchValue = searchTerm.trim().toLowerCase();
@@ -102,10 +182,13 @@ export default function ShopCatalog({
 
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 mb-16 border-y border-border py-8">
           <div className="flex flex-wrap gap-3">
-            {categories.map((cat) => (
+            {activeCategories.map((cat) => (
               <button
                 key={cat}
-                onClick={() => setActiveCategory(cat)}
+                onClick={() => {
+                  handleFilterInteraction();
+                  setActiveCategory(cat);
+                }}
                 className={`text-[8px] uppercase tracking-[0.3em] font-bold px-6 py-3 border transition-all ${
                   activeCategory === cat
                     ? 'bg-foreground text-background border-foreground'
@@ -118,14 +201,32 @@ export default function ShopCatalog({
           </div>
 
           <div className="flex items-center gap-4 w-full md:w-auto">
+            <div className="flex items-center gap-2">
+              {(['all', 'men', 'women'] as const).map((genderOption) => (
+                <button
+                  key={genderOption}
+                  onClick={() => {
+                    handleFilterInteraction();
+                    setActiveGender(genderOption);
+                  }}
+                  className={`text-[8px] uppercase tracking-[0.3em] font-bold px-4 py-3 border transition-all ${
+                    activeGender === genderOption
+                      ? 'bg-foreground text-background border-foreground'
+                      : 'border-border text-foreground hover:bg-foreground hover:text-background'
+                  }`}
+                >
+                  {genderOption}
+                </button>
+              ))}
+            </div>
             <div className="relative flex-1 md:w-72">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 opacity-50" size={14} />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 opacity-50" size={14} />
               <input
                 type="text"
-                placeholder="SEARCH PRODUCTS..."
+                placeholder="SEARCH"
                 value={searchTerm}
                 onChange={(event) => setSearchTerm(event.target.value)}
-                className="w-full bg-transparent border border-border pl-12 pr-4 py-3 text-[10px] uppercase tracking-widest focus:outline-none focus:bg-foreground focus:text-background transition-all"
+                className="w-full bg-transparent border border-border pl-10 pr-4 py-3 text-[10px] uppercase tracking-widest focus:outline-none focus:bg-foreground focus:text-background transition-all"
               />
             </div>
             {/* <div className="relative group">

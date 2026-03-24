@@ -12,6 +12,7 @@ import {
 import Image from "next/image";
 import { optimizeCloudinaryUrl } from "@/lib/utils";
 import type { Product } from "@/types";
+import { categories, mensCategories, womensCategories, unisexCategories } from "@/utils/catogories";
 
 type ProductFormState = {
   name: string;
@@ -27,7 +28,7 @@ type ProductFormState = {
 
 const initialFormState: ProductFormState = {
   name: "",
-  category: "Tops",
+  category: "",
   gender: "unisex",
   price: "",
   stock: "",
@@ -37,14 +38,13 @@ const initialFormState: ProductFormState = {
   isFeatured: false,
 };
 
-const mensCategories = ["OverSized", "Regular"];
-const womensCategories = ["OverSized", "Regular", "Shorts", "Tops"];
-const unisexCategories = ["OverSized", "Regular", "Shorts", "Tops"];
-
 export default function AdminProducts() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [genderFilter, setGenderFilter] = useState<"all" | "men" | "women" | "unisex">("all");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [featuredFilter, setFeaturedFilter] = useState<"all" | "featured" | "not-featured">("all");
   const [isLoadingProducts, setIsLoadingProducts] = useState(true);
   const [isSavingProduct, setIsSavingProduct] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -72,17 +72,48 @@ export default function AdminProducts() {
     };
   }, [selectedFilePreviews]);
 
-  const filteredProducts = useMemo(() => {
-    if (!searchTerm.trim()) return products;
+  const categoryOptions = useMemo(() => {
+    const source =
+      genderFilter === "all"
+        ? products
+        : products.filter((product) => product.gender === genderFilter);
 
+    const values = Array.from(new Set(source.map((product) => product.category)));
+    values.sort((a, b) => a.localeCompare(b));
+
+    return ["all", ...values];
+  }, [products, genderFilter]);
+
+  useEffect(() => {
+    if (!categoryOptions.includes(categoryFilter)) {
+      setCategoryFilter("all");
+    }
+  }, [categoryFilter, categoryOptions]);
+
+  const filteredProducts = useMemo(() => {
     const value = searchTerm.toLowerCase();
+
     return products.filter((product) => {
-      return (
+      const matchesSearch =
+        !searchTerm.trim() ||
         product.name.toLowerCase().includes(value) ||
-        product.category.toLowerCase().includes(value)
+        product.category.toLowerCase().includes(value);
+      const matchesGender =
+        genderFilter === "all" || product.gender === genderFilter;
+      const matchesCategory =
+        categoryFilter === "all" || product.category === categoryFilter;
+      const matchesFeatured =
+        featuredFilter === "all" ||
+        (featuredFilter === "featured" ? product.isFeatured : !product.isFeatured);
+
+      return (
+        matchesSearch &&
+        matchesGender &&
+        matchesCategory &&
+        matchesFeatured
       );
     });
-  }, [products, searchTerm]);
+  }, [products, searchTerm, genderFilter, categoryFilter, featuredFilter]);
 
   useEffect(() => {
     const loadProducts = async () => {
@@ -307,7 +338,7 @@ export default function AdminProducts() {
       </div>
 
       {/* Filters */}
-      <div className="flex gap-4">
+      <div className="flex flex-col lg:flex-row gap-4">
         <div className="relative flex-1">
           <Search
             className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500"
@@ -321,10 +352,51 @@ export default function AdminProducts() {
             className="w-full bg-zinc-900 border border-white/5 pl-10 pr-4 py-2 text-sm focus:outline-none focus:border-white/20 transition-colors rounded-lg"
           />
         </div>
-        <button className="flex items-center gap-2 border border-white/5 px-4 py-2 text-sm text-zinc-400 hover:text-white transition-colors rounded-lg">
-          <Filter size={16} />
-          Filter
-        </button>
+        <div className="flex flex-col sm:flex-row gap-3">
+          <div className="flex items-center gap-2 border border-white/5 px-3 py-2 text-sm text-zinc-300 rounded-lg">
+            <Filter size={16} className="text-zinc-500" />
+            <select
+              value={genderFilter}
+              onChange={(event) => setGenderFilter(event.target.value as "all" | "men" | "women" | "unisex")}
+              className="bg-transparent focus:outline-none"
+            >
+              <option value="all" className="bg-zinc-900">All genders</option>
+              <option value="men" className="bg-zinc-900">Men</option>
+              <option value="women" className="bg-zinc-900">Women</option>
+              <option value="unisex" className="bg-zinc-900">Unisex</option>
+            </select>
+          </div>
+
+          <div className="border border-white/5 px-3 py-2 text-sm text-zinc-300 rounded-lg">
+            <select
+              value={categoryFilter}
+              onChange={(event) => setCategoryFilter(event.target.value)}
+              className="bg-transparent focus:outline-none"
+            >
+              {categoryOptions.map((category) => (
+                <option key={category} value={category} className="bg-zinc-900">
+                  {category === "all" ? "All categories" : category}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="border border-white/5 px-3 py-2 text-sm text-zinc-300 rounded-lg">
+            <select
+              value={featuredFilter}
+              onChange={(event) =>
+                setFeaturedFilter(
+                  event.target.value as "all" | "featured" | "not-featured",
+                )
+              }
+              className="bg-transparent focus:outline-none"
+            >
+              <option value="all" className="bg-zinc-900">All products</option>
+              <option value="featured" className="bg-zinc-900">Featured</option>
+              <option value="not-featured" className="bg-zinc-900">Not featured</option>
+            </select>
+          </div>
+        </div>
       </div>
 
       {/* Products Table */}
@@ -677,7 +749,7 @@ export default function AdminProducts() {
 
       {/* Delete Confirmation Modal */}
       {deletingProductId && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
           <div className="bg-zinc-900 border border-white/10 w-full max-w-sm rounded-xl overflow-hidden p-6 text-center shadow-2xl">
             <Trash2 size={48} className="mx-auto mb-6 text-red-500/80" />
             <h3 className="text-xl font-display font-bold mb-2">

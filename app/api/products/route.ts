@@ -1,18 +1,27 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/db';
 import Product from '@/models/Product';
+import {tShirtTypes} from '@/utils/catogories';
+function escapeRegex(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
 
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
   try {
     await dbConnect();
-    const { searchParams } = new URL(req.url);
-    const category = searchParams.get('category');
-    const gender = searchParams.get('gender');
-    const sort = searchParams.get('sort');
-    const featured = searchParams.get('featured');
+    const category = req.nextUrl.searchParams.get('category');
+    const gender = req.nextUrl.searchParams.get('gender');
+    const sort = req.nextUrl.searchParams.get('sort');
+    const featured = req.nextUrl.searchParams.get('featured');
 
     let query: any = {};
-    if (category && category !== 'All') query.category = category;
+    if (category && category.toLowerCase() !== 'all') {
+      if (['t-shirts'].includes(category.toLowerCase())) {
+        query.category = { $in: tShirtTypes };
+      }else {
+        query.category = { $regex: `^${escapeRegex(category)}$`, $options: 'i' };
+      }
+    }
     if (gender === 'men') query.gender = { $in: ['men', 'unisex'] };
     if (gender === 'women') query.gender = { $in: ['women', 'unisex'] };
     if (gender === 'unisex') query.gender = 'unisex';
@@ -23,6 +32,7 @@ export async function GET(req: Request) {
     if (sort === 'price-high') sortQuery = { price: -1 };
     if (sort === 'popular') sortQuery = { clicks: -1 };
 
+    console.log('Query:', query);
     const products = await Product.find(query).sort(sortQuery);
     return NextResponse.json(products);
   } catch (error) {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import Navbar from '@/components/navbar';
 import Footer from '@/components/footer';
 import LoadingScreen from '@/components/loading-screen';
@@ -9,9 +9,9 @@ import Image from 'next/image';
 import type { Product } from '@/types';
 
 const featuredCategories: { name: string; image: string; href: string }[] = [
-  { name: 'Shorts', image: '/images/home/categories/short.webp', href: '/shop?category=tops' },
-  { name: 'Shirts', image: '/images/home/categories/shirt.webp', href: '/shop?category=bottoms' },
-  { name: 'Accessories', image: '/images/home/categories/short.webp', href: '/shop?category=accessories' },
+  { name: 'T-Shirts', image: '/images/home/categories/cat1.png', href: '/shop?category=T-Shirts' },
+  { name: 'Shorts', image: '/images/home/categories/cat2.png', href: '/shop?category=Shorts' },
+  { name: 'Tops', image: '/images/home/categories/cat2.png', href: '/shop?category=Tops' },
 ];
 
 const HERO_TITLE = 'H A Y Z E';
@@ -71,7 +71,7 @@ export default function Home() {
         setIsLoadingArrivals(true);
         setArrivalsError('');
 
-        const response = await fetch('/api/products', { cache: 'no-store' });
+        const response = await fetch('/api/products?featured=true', { cache: 'no-store' });
         if (!response.ok) {
           throw new Error('Failed to load latest arrivals');
         }

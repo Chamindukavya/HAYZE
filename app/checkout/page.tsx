@@ -8,6 +8,7 @@ import Footer from '@/components/footer';
 import { ArrowRight, Loader } from 'lucide-react';
 import { useCart } from '@/hooks/use-cart';
 import Link from 'next/link';
+import { toast } from 'sonner';
 
 const WHATSAPP_NUMBER = '923001234567'; // Replace with your WhatsApp number
 const COD_CHARGES = 0; // Cash on delivery charges
@@ -95,13 +96,17 @@ export default function CheckoutPage() {
       const data = await response.json();
 
       if (!response.ok) {
+        toast.error('Failed to create order');
         throw new Error(data.error || 'Failed to create order');
       }
+
+      toast.success('Order created successfully');
 
       // Clear cart and redirect to success page
       clearCart();
       router.push(`/order-confirmation?orderNumber=${data.orderNumber}&orderId=${data.orderId}`);
     } catch (err) {
+      toast.error('Failed to create order');
       setError(err instanceof Error ? err.message : 'An error occurred');
       setLoading(false);
     }
@@ -246,22 +251,6 @@ export default function CheckoutPage() {
                     Pay when your order arrives
                   </p>
                 </div>
-              </div>
-
-              {/* Contact Support */}
-              <div className="bg-background border border-border p-6 rounded">
-                <h3 className="text-sm font-bold uppercase tracking-[0.2em] mb-3">Need Help?</h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Contact us on WhatsApp for any queries about your order.
-                </p>
-                <a
-                  href={`https://wa.me/${WHATSAPP_NUMBER.replace(/\D/g, '')}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block bg-green-600 text-white px-6 py-2 text-xs font-bold uppercase tracking-[0.2em] hover:bg-green-700 transition-colors"
-                >
-                  Chat on WhatsApp
-                </a>
               </div>
             </form>
           </div>

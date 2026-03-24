@@ -6,10 +6,11 @@ import Footer from '@/components/footer';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { ShoppingBag, Heart, ChevronRight } from 'lucide-react';
+import { ShoppingBag, ChevronRight } from 'lucide-react';
 import { optimizeCloudinaryUrl } from '@/lib/utils';
 import type { Product } from '@/types';
 import { useCart } from '@/hooks/use-cart';
+import { toast } from 'sonner';
 
 export default function ProductPage() {
   const params = useParams<{ slug: string }>();
@@ -73,6 +74,7 @@ export default function ProductPage() {
   const handleAddToBag = () => {
     if (!product) return;
     addItem(product, selectedSize || 'One Size', selectedColor || 'Default');
+    toast.success('Added to bag');
   };
 
   return (
