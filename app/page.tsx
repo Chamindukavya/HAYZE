@@ -81,7 +81,7 @@ export default function Home() {
           className="pt-20 md:pt-32"
           title={
             <>
-              Explore the <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-500">HAYZE</span> Style
+              Explore the <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-blue-500">HAYZE</span> Style
             </>
           }
           images={[
@@ -113,7 +113,7 @@ export default function Home() {
 
       {/* ===== FEATURED CATEGORIES ===== */}
       <section id="categories" className="pb-24 px-8 max-w-7xl mx-auto">
-        <div className="text-center mb-16 reveal">
+        <div className="text-center mb-8 reveal">
           <span className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-3 block">
             Explore
           </span>
@@ -121,6 +121,26 @@ export default function Home() {
             SHOP BY CATEGORY
           </h2>
         </div>
+
+        {/* Quick nav pills */}
+        <div className="mb-8 flex flex-wrap items-center justify-center gap-3 md:gap-4 reveal">
+          {[
+            { label: 'Men', href: '/men' },
+            { label: 'Women', href: '/women' },
+            { label: 'Shop All', href: '/shop' },
+          ].map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="group inline-flex min-w-28 items-center justify-center rounded-full border border-border shadow-sm shadow-amber-50 bg-background px-3 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-foreground transition-all duration-300 hover:-translate-y-0.5 hover:border-foreground hover:bg-foreground hover:text-background"
+            >
+              <span className="transition-transform duration-300 group-hover:translate-x-0.5">
+                {item.label}
+              </span>
+            </Link>
+          ))}
+        </div>
+
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           {featuredCategories.map((cat, index) => (
