@@ -10,7 +10,7 @@ import { useCart } from '@/hooks/use-cart';
 import Link from 'next/link';
 import { toast } from 'sonner';
 
-const COD_CHARGES = 0; // Cash on delivery charges
+const COD_CHARGES = 350; // Cash on delivery charges
 
 export default function CheckoutPage() {
   const router = useRouter();
