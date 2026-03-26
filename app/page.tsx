@@ -8,11 +8,12 @@ import Link from 'next/link';
 import Image from 'next/image';
 import type { Product } from '@/types';
 import { HeroSection } from '@/components/ui/feature-carousel';
+import { optimizeCloudinaryUrl } from '@/lib/utils';
 
 const featuredCategories: { name: string; image: string; href: string }[] = [
-  { name: 'T-Shirts', image: 'https://res.cloudinary.com/domv04fne/image/upload/v1774505934/IMG_0228_2copy_mymcbz.jpg', href: '/shop?category=T-Shirts' },
-  { name: 'Shorts', image: 'https://res.cloudinary.com/domv04fne/image/upload/v1774457058/IMG_0200_copy_xh0i8c.jpg', href: '/shop?category=Shorts' },
-  { name: 'Tops', image: 'https://res.cloudinary.com/domv04fne/image/upload/v1774456963/IMG_0278_copy_uwi9ko.jpg', href: '/shop?category=Tops' },
+  { name: 'T-Shirts', image: optimizeCloudinaryUrl('https://res.cloudinary.com/domv04fne/image/upload/v1774505934/IMG_0228_2copy_mymcbz.jpg'), href: '/shop?category=T-Shirts' },
+  { name: 'Shorts', image: optimizeCloudinaryUrl('https://res.cloudinary.com/domv04fne/image/upload/v1774457058/IMG_0200_copy_xh0i8c.jpg'), href: '/shop?category=Shorts' },
+  { name: 'Tops', image: optimizeCloudinaryUrl('https://res.cloudinary.com/domv04fne/image/upload/v1774456963/IMG_0278_copy_uwi9ko.jpg'), href: '/shop?category=Tops' },
 ];
 
 export default function Home() {
@@ -86,23 +87,23 @@ export default function Home() {
           }
           images={[
             {
-              src: 'https://res.cloudinary.com/domv04fne/image/upload/v1774457194/IMG_0307_copy_qneslh.jpg',
+              src: optimizeCloudinaryUrl('https://res.cloudinary.com/domv04fne/image/upload/v1774457194/IMG_0307_copy_qneslh.jpg'),
               alt: 'Professional portrait',
             },
             {
-              src: 'https://res.cloudinary.com/domv04fne/image/upload/v1774453798/IMG_0263_copy_oqevgx.jpg',
+              src: optimizeCloudinaryUrl('https://res.cloudinary.com/domv04fne/image/upload/v1774453798/IMG_0263_copy_oqevgx.jpg'),
               alt: 'Scenic landscape',
             },
             {
-              src: 'https://res.cloudinary.com/domv04fne/image/upload/v1774456358/IMG_0256_copy_dnmyhh.jpg',
+              src: optimizeCloudinaryUrl('https://res.cloudinary.com/domv04fne/image/upload/v1774456358/IMG_0256_copy_dnmyhh.jpg'),
               alt: 'Artistic photo',
             },
             {
-              src: 'https://res.cloudinary.com/domv04fne/image/upload/v1774456105/IMG_0363_copy_ldmczy.jpg',
+              src: optimizeCloudinaryUrl('https://res.cloudinary.com/domv04fne/image/upload/v1774456105/IMG_0363_copy_ldmczy.jpg'),
               alt: 'A dog wearing sunglasses',
             },
             {
-              src: 'https://res.cloudinary.com/domv04fne/image/upload/v1774456068/IMG_0330_copy_ahwica.jpg',
+              src: optimizeCloudinaryUrl('https://res.cloudinary.com/domv04fne/image/upload/v1774456068/IMG_0330_copy_ahwica.jpg'),
               alt: 'Creative shot of a person from behind',
             },
           ]}
@@ -170,7 +171,7 @@ export default function Home() {
                   className="object-cover group-hover:scale-110 group-hover:grayscale-0 transition-all duration-700"
                   referrerPolicy="no-referrer"
                 />
-                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors duration-500" />
+                <div className="absolute inset-0 bg-black/10 group-hover:bg-black/40 transition-colors duration-500" />
                 <div className="absolute bottom-8 left-8 z-10">
                   <h3 className="text-2xl font-display font-bold text-white tracking-tighter">
                     {cat.name}
@@ -232,10 +233,10 @@ export default function Home() {
                 >
                   <div className="relative aspect-3/4 overflow-hidden bg-background border border-border mb-4">
                     <Image
-                      src={
+                      src={optimizeCloudinaryUrl(
                         product.images?.[0] ||
                         'https://picsum.photos/seed/vibe-arrival-fallback/600/800'
-                      }
+                      )}
                       alt={product.name}
                       fill
                       className="object-cover group-hover:scale-105 transition-transform duration-700"
