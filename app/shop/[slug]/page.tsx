@@ -188,9 +188,14 @@ export default function ProductPage() {
               <div className="space-y-10 border-t border-border pt-10">
                 <div>
                   <h3 className="text-[10px] uppercase tracking-[0.3em] font-bold mb-4">Description</h3>
-                  <p className="text-sm text-muted-foreground font-light leading-relaxed">
-                    {product.description}
-                  </p>
+                  <div 
+                    className="text-sm text-muted-foreground font-light leading-relaxed [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_b]:font-bold [&_strong]:font-bold [&_i]:italic [&_em]:italic space-y-2"
+                    dangerouslySetInnerHTML={{ 
+                      __html: /<\/?[a-z][\s\S]*>/i.test(product.description || '') 
+                        ? product.description 
+                        : (product.description || '').replace(/\n/g, '<br />')
+                    }}
+                  />
                 </div>
                 <div>
                   <h3 className="text-[10px] uppercase tracking-[0.3em] font-bold mb-4">Details</h3>

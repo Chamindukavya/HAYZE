@@ -289,7 +289,7 @@ export default function ShopCatalog({
                     </h3>
                     <p className="text-[8px] uppercase tracking-[0.3em] opacity-50 mt-2">{product.category}</p>
                   </div>
-                  <p className="text-[10px] font-bold">${product.price.toFixed(2)}</p>
+                  <p className="text-[10px] font-bold">{product.price.toFixed(2)}</p>
                 </div>
                 <div className="flex gap-2 mt-4">
                   {(product.colors.length > 0 ? product.colors : ['Default']).slice(0, 3).map((color) => (

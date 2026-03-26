@@ -10,9 +10,9 @@ import type { Product } from '@/types';
 import { HeroSection } from '@/components/ui/feature-carousel';
 
 const featuredCategories: { name: string; image: string; href: string }[] = [
-  { name: 'T-Shirts', image: '/images/home/categories/cat1.png', href: '/shop?category=T-Shirts' },
-  { name: 'Shorts', image: '/images/home/categories/cat2.png', href: '/shop?category=Shorts' },
-  { name: 'Tops', image: '/images/home/categories/cat2.png', href: '/shop?category=Tops' },
+  { name: 'T-Shirts', image: 'https://res.cloudinary.com/domv04fne/image/upload/v1774505934/IMG_0228_2copy_mymcbz.jpg', href: '/shop?category=T-Shirts' },
+  { name: 'Shorts', image: 'https://res.cloudinary.com/domv04fne/image/upload/v1774457058/IMG_0200_copy_xh0i8c.jpg', href: '/shop?category=Shorts' },
+  { name: 'Tops', image: 'https://res.cloudinary.com/domv04fne/image/upload/v1774456963/IMG_0278_copy_uwi9ko.jpg', href: '/shop?category=Tops' },
 ];
 
 export default function Home() {
@@ -86,23 +86,23 @@ export default function Home() {
           }
           images={[
             {
-              src: 'https://images.unsplash.com/photo-1504051771394-dd2e66b2e08f?w=900&auto=format&fit=crop&q=60',
+              src: 'https://res.cloudinary.com/domv04fne/image/upload/v1774457194/IMG_0307_copy_qneslh.jpg',
               alt: 'Professional portrait',
             },
             {
-              src: 'https://images.unsplash.com/photo-1526510747491-58f928ec870f?w=900&auto=format&fit=crop&q=60',
+              src: 'https://res.cloudinary.com/domv04fne/image/upload/v1774453798/IMG_0263_copy_oqevgx.jpg',
               alt: 'Scenic landscape',
             },
             {
-              src: 'https://plus.unsplash.com/premium_photo-1670282392820-e3590c1c5c54?w=900&auto=format&fit=crop&q=60',
+              src: 'https://res.cloudinary.com/domv04fne/image/upload/v1774456358/IMG_0256_copy_dnmyhh.jpg',
               alt: 'Artistic photo',
             },
             {
-              src: 'https://images.unsplash.com/photo-1581403341630-a6e0b9d2d257?w=900&auto=format&fit=crop&q=60',
+              src: 'https://res.cloudinary.com/domv04fne/image/upload/v1774456105/IMG_0363_copy_ldmczy.jpg',
               alt: 'A dog wearing sunglasses',
             },
             {
-              src: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=900&auto=format&fit=crop&q=60',
+              src: 'https://res.cloudinary.com/domv04fne/image/upload/v1774456068/IMG_0330_copy_ahwica.jpg',
               alt: 'Creative shot of a person from behind',
             },
           ]}
@@ -249,7 +249,7 @@ export default function Home() {
                     {product.name}
                   </h3>
                   <p className="text-xs text-muted-foreground mt-1">
-                    ${product.price.toFixed(2)}
+                    {product.price.toFixed(2)}
                   </p>
                 </Link>
               ))

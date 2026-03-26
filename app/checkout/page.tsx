@@ -10,7 +10,6 @@ import { useCart } from '@/hooks/use-cart';
 import Link from 'next/link';
 import { toast } from 'sonner';
 
-const WHATSAPP_NUMBER = '923001234567'; // Replace with your WhatsApp number
 const COD_CHARGES = 0; // Cash on delivery charges
 
 export default function CheckoutPage() {
@@ -29,7 +28,7 @@ export default function CheckoutPage() {
     phone2: '',
   });
 
-  const shipping = items.length > 0 ? 10 : 0;
+  const shipping = 0;
   const total = subtotal + shipping + COD_CHARGES;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -272,7 +271,7 @@ export default function CheckoutPage() {
                         <p className="text-[10px] text-muted-foreground">Qty: {item.quantity}</p>
                       </div>
                       <p className="font-semibold text-xs whitespace-nowrap ml-2">
-                        ${(item.price * item.quantity).toFixed(2)}
+                        {(item.price * item.quantity).toFixed(2)}
                       </p>
                     </div>
                   ))}
@@ -285,21 +284,22 @@ export default function CheckoutPage() {
                 <div className="space-y-3 text-sm mb-6">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Subtotal</span>
-                    <span className="font-semibold">${subtotal.toFixed(2)}</span>
+                    <span className="font-semibold">{subtotal.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Shipping</span>
-                    <span className="font-semibold">${shipping.toFixed(2)}</span>
+                    {/* <span className="font-semibold">${shipping.toFixed(2)}</span> */}
+                    <span className="font-semibold">Free</span>
                   </div>
                   {COD_CHARGES > 0 && (
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">COD Charges</span>
-                      <span className="font-semibold">${COD_CHARGES.toFixed(2)}</span>
+                      <span className="font-semibold">{COD_CHARGES.toFixed(2)}</span>
                     </div>
                   )}
                   <div className="pt-3 border-t border-border flex justify-between font-bold text-lg">
                     <span>Total</span>
-                    <span>${total.toFixed(2)}</span>
+                    <span>{total.toFixed(2)}</span>
                   </div>
                 </div>
 

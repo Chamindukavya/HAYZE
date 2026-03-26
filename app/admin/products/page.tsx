@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useMemo, useState, useRef } from "react";
 import {
   Plus,
   Search,
@@ -8,6 +8,10 @@ import {
   Edit2,
   Trash2,
   ExternalLink,
+  Bold,
+  Italic,
+  List,
+  ListOrdered,
 } from "lucide-react";
 import Image from "next/image";
 import { optimizeCloudinaryUrl } from "@/lib/utils";
@@ -23,6 +27,7 @@ type ProductFormState = {
   description: string;
   colors: string;
   sizes: string;
+  imageUrls: string;
   isFeatured: boolean;
 };
 
@@ -35,7 +40,52 @@ const initialFormState: ProductFormState = {
   description: "",
   colors: "",
   sizes: "",
+  imageUrls: "",
   isFeatured: false,
+};
+
+const RichTextEditor = ({ value, onChange }: { value: string, onChange: (value: string) => void }) => {
+  const editorRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (editorRef.current && value !== editorRef.current.innerHTML) {
+      editorRef.current.innerHTML = value || '';
+    }
+  }, [value]);
+
+  const handleInput = () => {
+    if (editorRef.current) {
+      onChange(editorRef.current.innerHTML);
+    }
+  };
+
+  const handleCommand = (e: React.MouseEvent, command: string, arg?: string) => {
+    e.preventDefault();
+    document.execCommand(command, false, arg);
+    if (editorRef.current) {
+      onChange(editorRef.current.innerHTML);
+      editorRef.current.focus();
+    }
+  };
+
+  return (
+    <div className="w-full bg-zinc-950 border border-white/5 rounded-lg overflow-hidden transition-colors focus-within:border-white/20">
+      <div className="flex items-center gap-1 border-b border-white/5 p-2 bg-zinc-900/50">
+        <button type="button" onClick={(e) => handleCommand(e, 'bold')} className="p-1.5 text-zinc-400 hover:text-white hover:bg-white/10 rounded transition-colors" title="Bold"><Bold size={14} /></button>
+        <button type="button" onClick={(e) => handleCommand(e, 'italic')} className="p-1.5 text-zinc-400 hover:text-white hover:bg-white/10 rounded transition-colors" title="Italic"><Italic size={14} /></button>
+        <div className="w-px h-4 bg-white/10 mx-1" />
+        <button type="button" onClick={(e) => handleCommand(e, 'insertUnorderedList')} className="p-1.5 text-zinc-400 hover:text-white hover:bg-white/10 rounded transition-colors" title="Bullet List"><List size={14} /></button>
+        <button type="button" onClick={(e) => handleCommand(e, 'insertOrderedList')} className="p-1.5 text-zinc-400 hover:text-white hover:bg-white/10 rounded transition-colors" title="Numbered List"><ListOrdered size={14} /></button>
+      </div>
+      <div
+        ref={editorRef}
+        contentEditable
+        onInput={handleInput}
+        onBlur={handleInput}
+        className="px-4 py-3 min-h-[120px] text-sm focus:outline-none outline-none [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_b]:font-bold [&_i]:italic"
+      />
+    </div>
+  );
 };
 
 export default function AdminProducts() {
@@ -156,6 +206,7 @@ export default function AdminProducts() {
       description: product.description || "",
       colors: product.colors?.join(", ") || "",
       sizes: product.sizes?.join(", ") || "",
+      imageUrls: product.images?.join("\n") || "",
       isFeatured: product.isFeatured || false,
     });
     setEditingProductId(product._id);
@@ -231,8 +282,29 @@ export default function AdminProducts() {
     return imageUrls;
   };
 
+  const parseManualImageUrls = (value: string) => {
+    const entries = value
+      .split(/[\n,]/)
+      .map((item) => item.trim())
+      .filter(Boolean);
+
+    const invalidEntries = entries.filter(
+      (entry) => !/^https?:\/\//i.test(entry),
+    );
+
+    return { entries, invalidEntries };
+  };
+
   const handleCreateProduct = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    const { entries: manualImageUrls, invalidEntries } =
+      parseManualImageUrls(formState.imageUrls);
+
+    if (invalidEntries.length > 0) {
+      setErrorMessage("Image URLs must start with http:// or https://.");
+      return;
+    }
 
     if (
       !formState.name ||
@@ -244,8 +316,12 @@ export default function AdminProducts() {
       return;
     }
 
-    if (!editingProductId && selectedFiles.length === 0) {
-      setErrorMessage("Please upload at least one product image.");
+    if (
+      !editingProductId &&
+      selectedFiles.length === 0 &&
+      manualImageUrls.length === 0
+    ) {
+      setErrorMessage("Please upload at least one image or add an image URL.");
       return;
     }
 
@@ -253,9 +329,10 @@ export default function AdminProducts() {
       setIsSavingProduct(true);
       setErrorMessage("");
 
-      let images = undefined;
+      let images: string[] = [...manualImageUrls];
       if (selectedFiles.length > 0) {
-        images = await uploadImagesToCloudinary();
+        const uploadedUrls = await uploadImagesToCloudinary();
+        images = [...images, ...uploadedUrls];
       }
 
       const payload: any = {
@@ -276,7 +353,7 @@ export default function AdminProducts() {
         isFeatured: formState.isFeatured,
       };
 
-      if (images && images.length > 0) {
+      if (images.length > 0) {
         payload.images = images;
       }
 
@@ -624,13 +701,9 @@ export default function AdminProducts() {
                   <label className="text-[10px] uppercase tracking-widest font-bold">
                     Description
                   </label>
-                  <textarea
-                    name="description"
-                    rows={4}
+                  <RichTextEditor
                     value={formState.description}
-                    onChange={handleInputChange}
-                    className="w-full bg-zinc-950 border border-white/5 px-4 py-3 text-sm focus:outline-none focus:border-white/20 transition-colors rounded-lg resize-none"
-                    required
+                    onChange={(value) => setFormState(prev => ({ ...prev, description: value }))}
                   />
                 </div>
                 <div className="grid md:grid-cols-2 gap-6">
@@ -679,6 +752,17 @@ export default function AdminProducts() {
                   <label className="text-[10px] uppercase tracking-widest font-bold">
                     Product Images
                   </label>
+                  <textarea
+                    name="imageUrls"
+                    rows={3}
+                    value={formState.imageUrls}
+                    onChange={handleInputChange}
+                    placeholder="Paste Cloudinary image URLs (comma or new line separated)"
+                    className="w-full bg-zinc-950 border border-white/5 px-4 py-3 text-sm focus:outline-none focus:border-white/20 transition-colors rounded-lg resize-y"
+                  />
+                  <p className="text-xs text-zinc-500">
+                    Add image URLs manually, upload files, or use both.
+                  </p>
                   <div className="border-2 border-dashed border-white/5 rounded-xl p-8 text-center hover:border-white/10 transition-colors cursor-pointer">
                     <Plus className="mx-auto mb-2 text-zinc-500" size={24} />
                     <input
