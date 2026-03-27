@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Navbar from '@/components/navbar';
 import Footer from '@/components/footer';
+import LoadingScreen from '@/components/loading-screen';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
@@ -83,6 +84,20 @@ export default function ShopCatalog({
       setActiveCategory('All');
     }
   }, [activeCategories, activeCategory]);
+
+  // Restore scroll position after returning from a product page
+  useEffect(() => {
+    if (!isLoading && products.length > 0) {
+      const savedScroll = sessionStorage.getItem('shopScrollPos');
+      if (savedScroll) {
+        // Use a slight timeout to ensure images/layout have rendered
+        setTimeout(() => {
+          window.scrollTo({ top: parseInt(savedScroll, 10), behavior: 'instant' });
+          sessionStorage.removeItem('shopScrollPos');
+        }, 100);
+      }
+    }
+  }, [isLoading, products]);
 
   useEffect(() => {
     const loadProducts = async () => {
@@ -172,6 +187,7 @@ export default function ShopCatalog({
 
   return (
     <main className="min-h-screen bg-background pt-24 text-foreground">
+      <LoadingScreen />
       <Navbar />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -249,7 +265,7 @@ export default function ShopCatalog({
         </div>
 
         {isLoading ? (
-          <div className="mb-32 py-16 text-center text-sm uppercase tracking-[0.2em] opacity-60">
+          <div className="mb-32 py-16 text-center text-sm uppercase tracking-[0.2em] opacity-60 animate-pulse">
             Loading products...
           </div>
         ) : error ? (
@@ -263,7 +279,14 @@ export default function ShopCatalog({
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-8 gap-y-16 mb-16">
             {displayedProducts.map((product) => (
-              <Link key={product._id} href={`/shop/${product._id}`} className="group">
+              <Link 
+                key={product._id} 
+                href={`/shop/${product._id}`} 
+                className="group"
+                onClick={() => {
+                  sessionStorage.setItem('shopScrollPos', window.scrollY.toString());
+                }}
+              >
                 <div className="relative aspect-3/4 overflow-hidden border border-border mb-6">
                   <Image
                     src={optimizeCloudinaryUrl(product.images?.[0] || 'https://picsum.photos/seed/vibe-shop-fallback/800/1000')}

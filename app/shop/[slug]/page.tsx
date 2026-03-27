@@ -3,10 +3,11 @@
 import { useEffect, useMemo, useState } from 'react';
 import Navbar from '@/components/navbar';
 import Footer from '@/components/footer';
+import LoadingScreen from '@/components/loading-screen';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { ShoppingBag, ChevronRight } from 'lucide-react';
+import { ShoppingBag, ChevronRight, Check } from 'lucide-react';
 import { optimizeCloudinaryUrl } from '@/lib/utils';
 import type { Product } from '@/types';
 import { useCart } from '@/hooks/use-cart';
@@ -24,6 +25,7 @@ export default function ProductPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [animations, setAnimations] = useState<{ id: number, startX: number, startY: number, targetX: number, targetY: number }[]>([]);
+  const [isAdded, setIsAdded] = useState(false);
 
   const images = useMemo(() => {
     if (!product?.images?.length) {
@@ -76,6 +78,9 @@ export default function ProductPage() {
     if (!product) return;
     addItem(product, selectedSize || 'One Size', selectedColor || 'Default');
     
+    setIsAdded(true);
+    setTimeout(() => setIsAdded(false), 4000);
+
     // Animation logic
     const buttonRect = e.currentTarget.getBoundingClientRect();
     const startX = buttonRect.left + buttonRect.width / 2;
@@ -96,6 +101,7 @@ export default function ProductPage() {
 
   return (
     <main className="min-h-screen bg-background pt-24">
+      <LoadingScreen />
       <Navbar />
 
       {/* Floating Cart Animation Element */}
@@ -127,7 +133,7 @@ export default function ProductPage() {
       </AnimatePresence>
 
       {isLoading ? (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center text-sm uppercase tracking-[0.2em] opacity-60">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center text-sm uppercase tracking-[0.2em] opacity-60 animate-pulse">
           Loading product...
         </div>
       ) : error || !product ? (
@@ -219,10 +225,15 @@ export default function ProductPage() {
               <div className="flex flex-col gap-4 mb-16">
                 <button
                   onClick={handleAddToBag}
-                  className="w-full bg-foreground text-background py-6 text-xs font-bold uppercase tracking-[0.3em] hover:opacity-90 transition-opacity flex items-center justify-center gap-3"
+                  disabled={isAdded}
+                  className={`w-full py-6 text-xs font-bold uppercase tracking-[0.3em] transition-all flex items-center justify-center gap-3 ${
+                    isAdded 
+                      ? 'bg-black text-white border border-white' 
+                      : 'bg-foreground text-background hover:opacity-90'
+                  }`}
                 >
-                  <ShoppingBag size={18} />
-                  Add to Bag
+                  {isAdded ? <Check size={18} /> : <ShoppingBag size={18} />}
+                  {isAdded ? 'Added to Bag' : 'Add to Bag'}
                 </button>
                 {/* <button className="w-full border border-border py-6 flex items-center justify-center hover:border-foreground transition-colors gap-3 text-xs font-bold uppercase tracking-[0.3em]">
                   <Heart size={18} />
