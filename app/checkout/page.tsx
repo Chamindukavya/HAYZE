@@ -99,7 +99,14 @@ export default function CheckoutPage() {
         throw new Error(data.error || 'Failed to create order');
       }
 
-      toast.success('Order created successfully');
+      toast.success('Order created successfully', {
+        style: {
+          borderRadius: '8px',
+          background: 'black',
+          color: 'white',
+          border: '1px solid white',
+        },
+      });
 
       // Clear cart and redirect to success page
       clearCart();

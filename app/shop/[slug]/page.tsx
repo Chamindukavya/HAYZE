@@ -10,7 +10,7 @@ import { ShoppingBag, ChevronRight } from 'lucide-react';
 import { optimizeCloudinaryUrl } from '@/lib/utils';
 import type { Product } from '@/types';
 import { useCart } from '@/hooks/use-cart';
-import { toast } from 'sonner';
+import { motion, AnimatePresence } from 'motion/react';
 
 export default function ProductPage() {
   const params = useParams<{ slug: string }>();
@@ -23,6 +23,7 @@ export default function ProductPage() {
   const [selectedColor, setSelectedColor] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  const [animations, setAnimations] = useState<{ id: number, startX: number, startY: number, targetX: number, targetY: number }[]>([]);
 
   const images = useMemo(() => {
     if (!product?.images?.length) {
@@ -71,15 +72,59 @@ export default function ProductPage() {
   const sizeOptions = product?.sizes.length ? product.sizes : ['One Size'];
   const colorOptions = product?.colors.length ? product.colors : ['Default'];
 
-  const handleAddToBag = () => {
+  const handleAddToBag = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (!product) return;
     addItem(product, selectedSize || 'One Size', selectedColor || 'Default');
-    toast.success('Added to bag');
+    
+    // Animation logic
+    const buttonRect = e.currentTarget.getBoundingClientRect();
+    const startX = buttonRect.left + buttonRect.width / 2;
+    const startY = buttonRect.top + buttonRect.height / 2;
+    
+    // Estimate cart icon position top right (roughly based on navbar layout)
+    const containerWidth = Math.min(window.innerWidth, 1280);
+    const targetX = window.innerWidth / 2 + containerWidth / 2 - 80;
+    const targetY = 30;
+
+    const id = Date.now();
+    setAnimations(prev => [...prev, { id, startX, startY, targetX, targetY }]);
+
+    setTimeout(() => {
+      setAnimations(prev => prev.filter(anim => anim.id !== id));
+    }, 800);
   };
 
   return (
     <main className="min-h-screen bg-background pt-24">
       <Navbar />
+
+      {/* Floating Cart Animation Element */}
+      <AnimatePresence>
+        {animations.map(anim => (
+          <motion.div
+            key={anim.id}
+            initial={{ opacity: 1, x: anim.startX, y: anim.startY, scale: 1 }}
+            animate={{ 
+              opacity: [1, 1, 0.5, 0],
+              x: anim.targetX,
+              y: anim.targetY,
+              scale: [1, 1.2, 0.5, 0.2]
+            }}
+            transition={{ duration: 0.8, ease: "easeInOut" }}
+            className="fixed z-[100] w-12 h-12 rounded-full border border-border bg-background overflow-hidden pointer-events-none"
+            style={{ left: 0, top: 0, marginLeft: '-24px', marginTop: '-24px' }}
+          >
+            {images[0] && (
+              <Image 
+                src={optimizeCloudinaryUrl(images[0])}
+                alt={product?.name || "Product"}
+                fill
+                className="object-cover"
+              />
+            )}
+          </motion.div>
+        ))}
+      </AnimatePresence>
 
       {isLoading ? (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center text-sm uppercase tracking-[0.2em] opacity-60">
