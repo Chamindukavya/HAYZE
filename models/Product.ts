@@ -9,6 +9,7 @@ export interface IProduct extends Document {
   images: string[];
   videos?: string[];
   colors: string[];
+  colorImages?: { color: string; url: string }[];
   sizes: string[];
   stock: number;
   isFeatured: boolean;
@@ -27,6 +28,7 @@ const ProductSchema: Schema = new Schema(
     images: { type: [String], required: true },
     videos: { type: [String], default: [] },
     colors: { type: [String], default: [] },
+    colorImages: { type: [{ color: String, url: String }], default: [] },
     sizes: { type: [String], default: [] },
     stock: { type: Number, required: true, default: 0 },
     isFeatured: { type: Boolean, default: false },

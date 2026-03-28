@@ -180,8 +180,31 @@ export default function ProductPage() {
               </div>
 
               <div className="space-y-12 mb-12">
-                {/* Color Selection */}
+                {/* Color Selection & Images */}
                 <div>
+                  {product.colorImages && product.colorImages.length > 0 && (
+                    <div className="mb-6">
+                      <div className="flex gap-3 overflow-x-auto pb-4 [&::-webkit-scrollbar]:hidden snap-x">
+                        {product.colorImages.map((ci) => (
+                          <button
+                            key={ci.color}
+                            onClick={() => setSelectedColor(ci.color)}
+                            className={`relative flex-shrink-0 w-20 h-28 border snap-start transition-all ${
+                              selectedColor === ci.color ? 'border-foreground scale-105' : 'border-border hover:border-foreground/50 opacity-70 hover:opacity-100'
+                            }`}
+                          >
+                            <Image
+                              src={optimizeCloudinaryUrl(ci.url)}
+                              alt={`${product.name} in ${ci.color}`}
+                              fill
+                              unoptimized
+                              className="object-cover"
+                            />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                   <h3 className="text-[10px] uppercase tracking-[0.3em] font-bold mb-6">Color: {selectedColor}</h3>
                   <div className="flex gap-4">
                     {colorOptions.map((color) => (

@@ -8,6 +8,7 @@ export interface Product {
   images: string[];
   videos?: string[];
   colors: string[];
+  colorImages?: { color: string; url: string }[];
   sizes: string[];
   stock: number;
   isFeatured: boolean;
