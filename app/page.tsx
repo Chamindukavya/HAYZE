@@ -302,7 +302,15 @@ export default function Home() {
               },
               {
                 q: 'Do you offer returns?',
-                a: 'Yes, we offer a 1-day return policy for all unworn items in original packaging.',
+                a: (
+                  <>
+                    Yes, we offer a 3-day return policy for unused items in original condition. Same-day returns are free of charge. Read our full{' '}
+                    <Link href="/return-policy" className="underline underline-offset-4 hover:text-foreground transition-colors font-medium text-foreground">
+                      Return Policy
+                    </Link>
+                    .
+                  </>
+                ),
               },
               {
                 q: 'Do you offer cash on delivery?',

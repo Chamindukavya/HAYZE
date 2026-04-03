@@ -66,6 +66,11 @@ export default function Footer() {
                   <span className="absolute -left-4 opacity-0 group-hover:opacity-100 transition-opacity">-</span>Contact Us
                 </Link>
               </li>
+              <li>
+                <Link href="/return-policy" className="hover:text-foreground transition-colors relative group inline-block">
+                  <span className="absolute -left-4 opacity-0 group-hover:opacity-100 transition-opacity">-</span>Return Policy
+                </Link>
+              </li>
               {/* 
               <li>
                 <Link href="/faq" className="hover:text-foreground transition-colors relative group inline-block">
