@@ -54,6 +54,16 @@ export default function ReturnPolicyPage() {
                   If the return is requested <span className="font-semibold">after the delivery day (within 3 days)</span>, the <span className="font-bold">customer is responsible for the return courier charges</span>.
                 </p>
               </div>
+              <div className="bg-muted/30 p-6 rounded-md border border-border">
+                <h3 className="text-lg font-bold text-foreground mb-3 text-sm uppercase tracking-wide">
+                  Exchanges
+                </h3>
+                <p className="text-sm">
+                    We offer exchanges for size or defects within 7 days of delivery.
+
+                    If you received a item dont match your size,    defective or wrong item, please contact us immediately.
+                </p>
+              </div>
             </div>
 
             <div>

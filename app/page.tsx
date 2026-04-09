@@ -267,7 +267,7 @@ export default function Home() {
               Our Story
             </span> */}
             <h2 className="text-3xl md:text-5xl lg:text-6xl font-display font-bold tracking-tighter mb-4 italic leading-tight">
-              &quot;BREATH IN - STYLE OUT&quot;
+              &quot;BE RARE - WEAR BETTER&quot;
             </h2>
           </div>
           <p className="reveal stagger-3 text-muted-foreground leading-relaxed font-light text-base md:text-lg">

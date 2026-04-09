@@ -6,7 +6,7 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], variable: '--font-display' });
 
 export const metadata: Metadata = {
-  title: 'HAYZE | Breath In Style Out',
+  title: 'HAYZE | Be Rare. Wear Better.',
   description: 'Modern, sleek, and high-quality fashion for the Gen Z generation.',
   icons: {
     icon: '/images/HAYZE-LOGO-WHITE.png',
