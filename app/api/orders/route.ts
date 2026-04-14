@@ -98,7 +98,6 @@ export async function POST(request: NextRequest) {
       paymentMethod: 'COD',
     });
 
-    await order.save();
 
     // Send Telegram notification (non-blocking — don't let it fail the order)
     notifyNewOrder({
@@ -114,6 +113,8 @@ export async function POST(request: NextRequest) {
       total,
       paymentMethod: 'COD',
     }).catch((err) => console.error('Telegram notification error:', err));
+
+    await order.save();
 
     return NextResponse.json(
       {
