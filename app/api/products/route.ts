@@ -17,9 +17,9 @@ export async function GET(req: NextRequest) {
     let query: any = {};
     if (category && category.toLowerCase() !== 'all') {
       if (['t-shirts'].includes(category.toLowerCase())) {
-        query.category = { $in: tShirtTypes };
+        query.category = { $in: tShirtTypes.map((type) => new RegExp(`^${escapeRegex(type)}$`, 'i')) };
       }else {
-        query.category = { $regex: `^${escapeRegex(category)}$`, $options: 'i' };
+        query.category = { $in: [new RegExp(`^${escapeRegex(category)}$`, 'i')] };
       }
     }
     if (gender === 'men') query.gender = { $in: ['men', 'unisex'] };

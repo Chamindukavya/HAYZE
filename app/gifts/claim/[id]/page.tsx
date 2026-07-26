@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import Link from 'next/link';
 import { Gift, Check, ArrowRight, Loader2 } from 'lucide-react';
 import { useParams } from 'next/navigation';
-import { optimizeCloudinaryUrl } from '@/lib/utils';
+import { formatCategories, optimizeCloudinaryUrl } from '@/lib/utils';
 
 export default function ClaimGiftPage() {
   const params = useParams();
@@ -122,7 +122,7 @@ export default function ClaimGiftPage() {
                 {gift.senderName} has been notified to complete the order.
               </p>
             </div>
-            <div className="relative aspect-[3/4] w-48 mx-auto border border-border">
+            <div className="relative aspect-3/4 w-48 mx-auto border border-border">
               <Image 
                 src={optimizeCloudinaryUrl(selectedProduct?.images?.[0] || 'https://picsum.photos/seed/vibe-placeholder/400/500')} 
                 alt={selectedProduct?.name || 'Product'}
@@ -145,7 +145,7 @@ export default function ClaimGiftPage() {
                     selectedProduct?._id === product._id ? 'border-foreground' : 'border-border'
                   }`}
                 >
-                  <div className="relative aspect-[3/4] overflow-hidden">
+                  <div className="relative aspect-3/4 overflow-hidden">
                     <Image
                       src={optimizeCloudinaryUrl(product.images[0])}
                       alt={product.name}
@@ -165,7 +165,7 @@ export default function ClaimGiftPage() {
                   </div>
                   <div className="p-4 text-center">
                     <h3 className="text-[10px] font-bold uppercase tracking-widest">{product.name}</h3>
-                    <p className="text-[8px] uppercase tracking-[0.2em] opacity-50 mt-1">{product.category}</p>
+                    <p className="text-[8px] uppercase tracking-[0.2em] opacity-50 mt-1">{formatCategories(product.category)}</p>
                   </div>
                 </div>
               ))}

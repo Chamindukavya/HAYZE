@@ -3,6 +3,7 @@
 import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react";
 import { Plus } from "lucide-react";
 import type { Product } from "@/types";
+import { formatCategories, hasCategory, normalizeCategories } from "@/lib/utils";
 import { DeleteConfirmModal } from "./components/delete-confirm-modal";
 import { ProductFormModal, ProductFormState } from "./components/product-form-modal";
 import { ProductsFilter } from "./components/products-filter";
@@ -10,7 +11,7 @@ import { ProductsTable } from "./components/products-table";
 
 const initialFormState: ProductFormState = {
   name: "",
-  category: "",
+  category: [],
   gender: "unisex",
   price: "",
   stock: "",
@@ -62,7 +63,13 @@ export default function AdminProducts() {
         ? products
         : products.filter((product) => product.gender === genderFilter);
 
-    const values = Array.from(new Set(source.map((product) => product.category)));
+    const values = Array.from(
+      new Set(
+        source
+          .flatMap((product) => normalizeCategories(product.category))
+          .filter((category) => category !== "All"),
+      ),
+    );
     values.sort((a, b) => a.localeCompare(b));
 
     return ["all", ...values];
@@ -78,14 +85,15 @@ export default function AdminProducts() {
     const value = searchTerm.toLowerCase();
 
     return products.filter((product) => {
+      const categoryText = formatCategories(product.category).toLowerCase();
       const matchesSearch =
         !searchTerm.trim() ||
         product.name.toLowerCase().includes(value) ||
-        product.category.toLowerCase().includes(value);
+        categoryText.includes(value);
       const matchesGender =
         genderFilter === "all" || product.gender === genderFilter;
       const matchesCategory =
-        categoryFilter === "all" || product.category === categoryFilter;
+        categoryFilter === "all" || hasCategory(product.category, categoryFilter);
       const matchesFeatured =
         featuredFilter === "all" ||
         (featuredFilter === "featured" ? product.isFeatured : !product.isFeatured);
@@ -141,7 +149,10 @@ export default function AdminProducts() {
 
     setFormState({
       name: product.name || "",
-      category: product.category || "Tops",
+      category:
+        normalizeCategories(product.category).length > 0
+          ? normalizeCategories(product.category)
+          : ["Tops"],
       gender: product.gender || "unisex",
       price: product.price?.toString() || "0",
       stock: product.stock?.toString() || "0",
@@ -184,6 +195,20 @@ export default function AdminProducts() {
     >,
   ) => {
     const { name, value } = event.target;
+
+    if (
+      name === "category" &&
+      event.target instanceof HTMLSelectElement &&
+      event.target.multiple
+    ) {
+      const categories = Array.from(
+        event.target.selectedOptions,
+        (option) => option.value,
+      ).filter((category) => category !== "All");
+      setFormState((previous) => ({ ...previous, category: categories }));
+      return;
+    }
+
     setFormState((previous) => ({ ...previous, [name]: value }));
   };
 
@@ -253,7 +278,8 @@ export default function AdminProducts() {
       !formState.name ||
       !formState.description ||
       !formState.price ||
-      !formState.stock
+      !formState.stock ||
+      formState.category.length === 0
     ) {
       setErrorMessage("Please complete all required fields.");
       return;

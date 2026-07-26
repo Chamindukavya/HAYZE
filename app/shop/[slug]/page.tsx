@@ -8,7 +8,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { ShoppingBag, ChevronRight, Check } from 'lucide-react';
-import { optimizeCloudinaryUrl } from '@/lib/utils';
+import { formatCategories, getPrimaryCategory, optimizeCloudinaryUrl } from '@/lib/utils';
 import type { Product } from '@/types';
 import { useCart } from '@/hooks/use-cart';
 import { motion, AnimatePresence } from 'motion/react';
@@ -52,8 +52,9 @@ export default function ProductPage() {
         setSelectedSize(data.sizes[0] || 'One Size');
         setSelectedColor(data.colors[0] || 'Default');
 
+        const primaryCategory = getPrimaryCategory(data.category);
         const relatedResponse = await fetch(
-          `/api/products?category=${encodeURIComponent(data.category)}`,
+          primaryCategory ? `/api/products?category=${encodeURIComponent(primaryCategory)}` : '/api/products',
           { cache: 'no-store' }
         );
 
@@ -117,8 +118,8 @@ export default function ProductPage() {
               scale: [1, 1.2, 0.5, 0.2]
             }}
             transition={{ duration: 0.8, ease: "easeInOut" }}
-            className="fixed z-[100] w-12 h-12 rounded-full border border-border bg-background overflow-hidden pointer-events-none"
-            style={{ left: 0, top: 0, marginLeft: '-24px', marginTop: '-24px' }}
+            className="fixed w-12 h-12 rounded-full border border-border bg-background overflow-hidden pointer-events-none"
+            style={{ left: 0, top: 0, zIndex: 100, marginLeft: '-24px', marginTop: '-24px' }}
           >
             {images[0] && (
               <Image 
@@ -171,7 +172,7 @@ export default function ProductPage() {
                 <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-6">
                   <Link href="/shop" className="hover:text-foreground transition-colors">Shop</Link>
                   <ChevronRight size={10} />
-                  <span>{product.category}</span>
+                  <span>{formatCategories(product.category)}</span>
                   <ChevronRight size={10} />
                   <span className="text-foreground">{product.name}</span>
                 </div>
@@ -189,9 +190,10 @@ export default function ProductPage() {
                           <button
                             key={ci.color}
                             onClick={() => setSelectedColor(ci.color)}
-                            className={`relative flex-shrink-0 w-20 h-28 border snap-start transition-all ${
+                            className={`relative w-20 h-28 border snap-start transition-all ${
                               selectedColor === ci.color ? 'border-foreground scale-105' : 'border-border hover:border-foreground/50 opacity-70 hover:opacity-100'
                             }`}
+                            style={{ flexShrink: 0 }}
                           >
                             <Image
                               src={optimizeCloudinaryUrl(ci.url)}
@@ -279,7 +281,7 @@ export default function ProductPage() {
                 <div>
                   <h3 className="text-[10px] uppercase tracking-[0.3em] font-bold mb-4">Details</h3>
                   <ul className="text-sm text-muted-foreground font-light space-y-2 list-none">
-                    <li className="flex items-center gap-3"><div className="w-1 h-1 bg-foreground rounded-full" /> Category: {product.category}</li>
+                    <li className="flex items-center gap-3"><div className="w-1 h-1 bg-foreground rounded-full" /> Category: {formatCategories(product.category)}</li>
                     <li className="flex items-center gap-3"><div className="w-1 h-1 bg-foreground rounded-full" /> In Stock: {product.stock}</li>
                     <li className="flex items-center gap-3"><div className="w-1 h-1 bg-foreground rounded-full" /> Available Sizes: {sizeOptions.join(', ')}</li>
                     <li className="flex items-center gap-3"><div className="w-1 h-1 bg-foreground rounded-full" /> Available Colors: {colorOptions.join(', ')}</li>

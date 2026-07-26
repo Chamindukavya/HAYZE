@@ -6,7 +6,7 @@ import { mensCategories, womensCategories, unisexCategories } from "@/utils/cato
 
 export type ProductFormState = {
   name: string;
-  category: string;
+  category: string[];
   gender: "men" | "women" | "unisex";
   price: string;
   stock: string;
@@ -52,6 +52,17 @@ export const ProductFormModal = ({
   onFileChange,
 }: ProductFormModalProps) => {
   if (!isOpen) return null;
+
+  const categoryOptions =
+    formState.gender === "men"
+      ? mensCategories
+      : formState.gender === "women"
+        ? womensCategories
+        : unisexCategories;
+
+  const selectableCategories = categoryOptions.filter(
+    (category) => category !== "All",
+  );
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
@@ -133,33 +144,24 @@ export const ProductFormModal = ({
             </div>
             <div className="space-y-2">
               <label className="text-[10px] uppercase tracking-widest font-bold">
-                Category
+                Categories
               </label>
               <select
                 name="category"
+                multiple
                 value={formState.category}
                 onChange={onInputChange}
-                className="w-full bg-zinc-950 border border-white/5 px-4 py-3 text-sm focus:outline-none focus:border-white/20 transition-colors rounded-lg"
+                className="w-full bg-zinc-950 border border-white/5 px-4 py-3 text-sm focus:outline-none focus:border-white/20 transition-colors rounded-lg min-h-36"
               >
-                {formState.gender === "men" &&
-                  mensCategories.map((cat) => (
-                    <option key={cat} value={cat}>
-                      {cat}
-                    </option>
-                  ))}
-                {formState.gender === "women" &&
-                  womensCategories.map((cat) => (
-                    <option key={cat} value={cat}>
-                      {cat}
-                    </option>
-                  ))}
-                {formState.gender === "unisex" &&
-                  unisexCategories.map((cat) => (
-                    <option key={cat} value={cat}>
-                      {cat}
-                    </option>
-                  ))}
+                {selectableCategories.map((cat) => (
+                  <option key={cat} value={cat}>
+                    {cat}
+                  </option>
+                ))}
               </select>
+              <p className="text-xs text-zinc-500">
+                Hold Ctrl or Cmd to select one or more categories.
+              </p>
             </div>
             <div className="space-y-2">
               <label className="text-[10px] uppercase tracking-widest font-bold">

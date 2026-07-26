@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Search } from 'lucide-react';
 import { optimizeCloudinaryUrl } from '@/lib/utils';
+import { formatCategories, hasCategory } from '@/lib/utils';
 import type { Product } from '@/types';
 import { mensCategories,unisexCategories, womensCategories } from '@/utils/catogories';
 type ShopCatalogProps = {
@@ -159,12 +160,12 @@ export default function ShopCatalog({
   const displayedProducts = useMemo(() => {
  
     const filtered = products.filter((product) => {
-      const matchesCategory = activeCategory === 'All' || product.category === activeCategory;
+      const matchesCategory = activeCategory === 'All' || hasCategory(product.category, activeCategory);
       const searchValue = searchTerm.trim().toLowerCase();
       const matchesSearch =
         !searchValue ||
         product.name.toLowerCase().includes(searchValue) ||
-        product.category.toLowerCase().includes(searchValue);
+        formatCategories(product.category).toLowerCase().includes(searchValue);
 
       return matchesCategory && matchesSearch;
     });
@@ -310,7 +311,7 @@ export default function ShopCatalog({
                     <h3 className="text-[10px] font-bold uppercase tracking-widest group-hover:underline underline-offset-8">
                       {product.name}
                     </h3>
-                    <p className="text-[8px] uppercase tracking-[0.3em] opacity-50 mt-2">{product.category}</p>
+                    <p className="text-[8px] uppercase tracking-[0.3em] opacity-50 mt-2">{formatCategories(product.category)}</p>
                   </div>
                   <p className="text-[10px] font-bold">{product.price.toFixed(2)}</p>
                 </div>

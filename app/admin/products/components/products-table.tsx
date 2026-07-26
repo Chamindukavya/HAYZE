@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { Edit2, Trash2, ExternalLink } from "lucide-react";
-import { optimizeCloudinaryUrl } from "@/lib/utils";
+import { formatCategories, optimizeCloudinaryUrl } from "@/lib/utils";
 import type { Product } from "@/types";
 
 interface ProductsTableProps {
@@ -73,7 +73,7 @@ export const ProductsTable = ({
                   </div>
                 </td>
                 <td className="px-6 py-4 text-zinc-400">
-                  {product.category}
+                  {formatCategories(product.category)}
                 </td>
                 <td className="px-6 py-4 font-bold">
                   ${product.price.toFixed(2)}

@@ -4,7 +4,7 @@ export interface IProduct extends Document {
   name: string;
   description: string;
   price: number;
-  category: string;
+  category: string[];
   gender: 'men' | 'women' | 'unisex';
   images: string[];
   videos?: string[];
@@ -23,7 +23,7 @@ const ProductSchema: Schema = new Schema(
     name: { type: String, required: true },
     description: { type: String, required: true },
     price: { type: Number, required: true },
-    category: { type: String, required: true },
+    category: { type: [String], required: true },
     gender: { type: String, enum: ['men', 'women', 'unisex'], required: true, default: 'unisex' },
     images: { type: [String], required: true },
     videos: { type: [String], default: [] },
